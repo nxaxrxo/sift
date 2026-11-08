@@ -42,8 +42,9 @@ It is not a replacement for the Beacon's writing. It replaces the *checking*.
    watches. Penalised (never banned): politics, celebrity, rumours, guides, deals.
 4. **Dedupe.** Two gates: canonical URL as the primary key, and a normalised title key so the same story
    from three outlets becomes one card — the highest-weight outlet wins.
-5. **Serve.** `/api/feed` pages on a `(publishedAt, urlKey)` tuple cursor, so nothing is skipped when ten
-   stories share a second.
+5. **Serve.** `/api/feed` pages on a `(bucket, score, mix, urlKey)` tuple cursor, so nothing is
+   skipped when ten stories share a score — and a short cursor would silently drop the tail of
+   every tie.
 
 ## Taste is a file, not a model
 
@@ -53,10 +54,10 @@ raises or buries a story. Edit it, redeploy, the board changes. There is no prom
 ## Run it locally
 
 ```powershell
-node --test tests/                        # 36 tests, no dependencies
+npm test                                  # 44 tests, no dependencies
 node scripts/live-ingest.mjs              # real feeds into .dev/sift.db, prints stats + sample cards
 node scripts/preview.mjs start            # hidden wrangler dev on :8788
-node scripts/preview.mjs shot             # headless screenshots at 1440 and 420 wide
+node scripts/preview.mjs shot             # headless screenshots at 1440 / 820 / 390
 node scripts/preview.mjs stop
 ```
 
@@ -66,18 +67,16 @@ the live internet. It exits non-zero if it stores nothing.
 ## Deploy
 
 ```powershell
-npx wrangler login                                    # once, interactive
-npx wrangler d1 create sift-db                        # copies database_id into wrangler.toml
-npx wrangler pages project create sift --production-branch main
-npx wrangler pages deploy public --project-name sift
+npx wrangler login        # once, interactive — the only step that needs you
+node scripts/deploy.mjs   # database, binding, project, upload, first sync
 ```
 
-Then `https://sift.pages.dev`. The first page load triggers a sync automatically; `/api/sync` can also be
-pinged by anything you like.
+That is the whole deploy. The script reuses an existing database and project rather than recreating
+them, so it is safe to run again. It prints the live URL when it is done — `https://sift.pages.dev`.
 
-**Keeping it warm without opening the page:** add a GitHub Action (or any cron service) that hits
-`https://sift.pages.dev/api/sync` every 10 minutes. Pages Functions do not have their own cron trigger;
-this is the supported pattern.
+**Keeping it warm without opening the page:** `.github/workflows/sync.yml` is already written — a
+GitHub Actions schedule that hits `/api/sync` every 15 minutes. Pages Functions do not have their own
+cron trigger; this is the supported pattern, and it starts working as soon as the repo is pushed.
 
 ## Layout
 

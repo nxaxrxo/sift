@@ -265,19 +265,24 @@ Single page, no router. Layout:
 ## 9. Local development
 
 ```powershell
-npx wrangler pages dev public --d1 DB=sift-db --port 8788      # hmm: use the script below
-node scripts/preview.mjs start      # detached, hidden, port 8788, writes .dev/done
-node scripts/preview.mjs shot       # headless Edge screenshot -> .dev/shot.png
+node scripts/preview.mjs start      # detached, hidden, port 8788, writes .dev/preview.pid
+node scripts/preview.mjs shot       # headless screenshots -> .dev/shot-{desktop,tablet,mobile}.png
 node scripts/preview.mjs stop
 ```
 
 `scripts/preview.mjs` owns the whole loop: creates the local D1, starts `wrangler pages dev` hidden,
-waits for the port, runs an ingest once, screenshots at 1440×2000 and 420×1600.
+waits for the port, and hands the browser work to `scripts/shot.mjs`, which drives Edge over the
+DevTools protocol at real 1440 / 820 / 390 pixel viewports and prints what the layout measured
+(horizontal overflow, broken image frames, clamped headlines). A headless `--window-size` cannot be
+trusted for this: both Edge and Chrome clamp it to roughly 496px, so a "390" capture renders at 496.
 
 ## 10. Acceptance (must all pass before "done")
 
-1. `node --test tests/` — parser fixtures (RSS2, Atom, RDF, CDATA, entity soup), scorer table,
-   url/title normalisation. All green.
+1. `npm test` — parser fixtures (RSS2, Atom, RDF, CDATA, entity soup), scorer table,
+   url/title normalisation, and the database: cursor paging over forty identical scores with no
+   duplicates and no gaps, lane OR-filtering, title-key dedupe. All green.
+   (`node --test tests/` fails on Node 24 with MODULE_NOT_FOUND; the four files are listed
+   explicitly in `package.json`.)
 2. Local ingest against the real source list: **≥ 30 sources OK, ≥ 300 items inserted**, no uncaught
    error in the log, ingest wall time < 25s.
 3. `/api/feed` pages correctly: page 1 → cursor → page 2, no duplicates, no gap, `nextCursor` null

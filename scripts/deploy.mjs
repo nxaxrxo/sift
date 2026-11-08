@@ -77,7 +77,14 @@ function step(text) {
 async function whoami() {
   const result = await wrangler(["whoami"], { quiet: true });
   const blob = `${result.stdout}\n${result.stderr}`;
-  if (/not authenticated/i.test(blob)) return null;
+
+  // Three ways wrangler says "no": the plain message, the non-interactive one that
+  // demands CLOUDFLARE_API_TOKEN, and a bare exit code with nothing useful printed.
+  const signedOut =
+    /not authenticated/i.test(blob) ||
+    /CLOUDFLARE_API_TOKEN/i.test(blob) ||
+    (result.code !== 0 && !/account/i.test(blob));
+  if (signedOut) return null;
 
   // `wrangler whoami` prints a table; the account id is the reliable part to pull.
   const id = blob.match(/\b([0-9a-f]{32})\b/);
