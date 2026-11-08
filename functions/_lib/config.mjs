@@ -34,13 +34,19 @@ const yt = (id, name, channelId, weight, lanes) => ({
   home: `https://www.youtube.com/channel/${channelId}`,
 });
 
-const news = (id, name, url, weight, lanes, home) => ({
+/**
+ * @param lanedByContent  Set when the source covers no single subject — Hacker News
+ *   is the only one. Such a source declares no lanes, and each item earns its lane
+ *   from the boost terms in TASTE, so an off-topic link never lands in a lane view.
+ */
+const news = (id, name, url, weight, lanes, home, { lanedByContent = false } = {}) => ({
   id,
   name,
   url,
   kind: "news",
   weight,
   lanes,
+  lanedByContent,
   home: home || new URL(url).origin,
 });
 
@@ -103,7 +109,13 @@ export const SOURCES = [
   news("tomshardware", "Tom's Hardware", "https://www.tomshardware.com/feeds/all", 1, ["tech"]),
   news("wccftech", "Wccftech", "https://wccftech.com/feed/", 1, ["tech"]),
   news("digitalfoundry", "Digital Foundry", "https://feeds.feedburner.com/digitalfoundry", 2, ["gaming", "tech"]),
-  news("hn", "Hacker News", "https://hnrss.org/frontpage?points=150", 1, ["gamedev", "ai"], "https://news.ycombinator.com"),
+  // Hacker News gets no fixed lanes on purpose. Its front page is whatever the
+  // internet found interesting today — a maths puzzle, a homelab post, an AI
+  // benchmark — so tagging the source "gamedev/ai" put a puzzle about the number
+  // four into the AI lane. With no declared lanes the item earns its lane from
+  // the same boost terms everything else is scored by, and something off-topic
+  // simply does not appear in a lane view.
+  news("hn", "Hacker News", "https://hnrss.org/frontpage?points=150", 1, [], "https://news.ycombinator.com", { lanedByContent: true }),
 
   /* ------------------------------------------------------------------- steam */
   news("steam-news", "Steam", "https://store.steampowered.com/feeds/news.xml", 1, ["gaming"], "https://store.steampowered.com/news/"),

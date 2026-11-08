@@ -175,9 +175,35 @@ test("config_everySourceIsWellFormed", () => {
     assert.ok(/^https:\/\//.test(source.url), `bad url for ${source.id}`);
     assert.ok([1, 2, 3].includes(source.weight), `bad weight for ${source.id}`);
     assert.ok(source.kind === "news" || source.kind === "video", `bad kind for ${source.id}`);
-    assert.ok(Array.isArray(source.lanes) && source.lanes.length > 0, `no lanes for ${source.id}`);
+    // A source either declares the lanes it covers, or opts in to being laned by
+    // content. Empty lanes without that flag is an oversight, not a choice.
+    const laned = Array.isArray(source.lanes) && source.lanes.length > 0;
+    assert.ok(laned || source.lanedByContent === true, `no lanes for ${source.id}`);
   }
   assert.ok(SOURCES.length >= 40, `only ${SOURCES.length} sources`);
+});
+
+test("config_contentLanedSourceEarnsItsLane", () => {
+  // Hacker News covers everything, so it declares no lanes. An item about a
+  // benchmark is AI; a maths puzzle is not. This is what stopped "Making any
+  // integer with four 2s" appearing in the AI lane.
+  const hn = SOURCES.find((s) => s.id === "hn");
+  assert.equal(hn.lanes.length, 0, "hn declares no lanes");
+  assert.equal(hn.lanedByContent, true);
+
+  const onTopic = scoreItem(
+    item({ title: "An open-weight model beats the benchmark on a laptop", summary: "" }),
+    hn,
+    new Date("2026-11-08T12:00:00Z"),
+  );
+  assert.ok(onTopic.lanes.includes("ai"), `expected the ai lane, got ${onTopic.lanes}`);
+
+  const offTopic = scoreItem(
+    item({ title: "Making any integer with four 2s", summary: "" }),
+    hn,
+    new Date("2026-11-08T12:00:00Z"),
+  );
+  assert.equal(offTopic.lanes.length, 0, "an off-topic link must not claim a lane");
 });
 
 test("config_sourceWeightsAreSane", () => {
