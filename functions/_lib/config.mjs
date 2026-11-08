@@ -189,27 +189,22 @@ export const SOURCES = [
   news("theoasg", "The OASG", "https://theoasg.com/feed/", 1, ["anime"], "https://theoasg.com"),
   news("icv2", "ICv2", "https://www.icv2.com/rss/", 1, ["anime", "business"], "https://www.icv2.com"),
 
-  // Japanese desks — a whole news surface the English press never prints.
-  news("4gamer", "4Gamer.net", "https://www.4gamer.net/rss/index.xml", 2, ["gaming", "games"], "https://www.4gamer.net"),
-  news("animeanime", "AnimeAnime", "https://animeanime.jp/rss20/index.rdf", 1, ["anime"], "https://animeanime.jp"),
-  news("denfaminico", "Denfaminicogamer", "https://news.denfaminicogamer.jp/feed", 2, ["gaming"], "https://news.denfaminicogamer.jp"),
-  news("gamespark", "Game*Spark", "https://www.gamespark.jp/rss20/index.rdf", 2, ["gaming", "indie"], "https://www.gamespark.jp"),
-  news("gigazine", "GIGAZINE", "https://gigazine.net/news/rss_2.0/", 1, ["tech"], "https://gigazine.net"),
-  news("insidegames", "Inside Games", "https://www.inside-games.jp/rss20/index.rdf", 2, ["gaming"], "https://www.inside-games.jp"),
-  news("gamewatch", "Game Watch", "https://game.watch.impress.co.jp/data/rss/1.0/gmw/feed.rdf", 1, ["gaming"], "https://game.watch.impress.co.jp"),
-  news("automaton-jp", "Automaton (JP)", "https://automaton-media.com/feed/", 2, ["gaming"], "https://automaton-media.com"),
-
-  // Non-English regional press — each one is a separate editorial judgement.
-  news("gamekult", "Gamekult", "https://www.gamekult.com/feed.xml", 2, ["gaming"], "https://www.gamekult.com"),
-  news("gryonline", "Gry-Online", "https://www.gry-online.pl/rss/news.xml", 2, ["gaming"], "https://www.gry-online.pl"),
-  news("gcores", "Gcores", "https://www.gcores.com/rss", 2, ["gaming"], "https://www.gcores.com"),
-  news("jeuxvideo", "Jeuxvideo.com", "https://www.jeuxvideo.com/rss/rss.xml", 1, ["gaming"], "https://www.jeuxvideo.com"),
-  news("everyeye", "Everyeye.it", "https://www.everyeye.it/feed/feed_news_rss.asp", 1, ["gaming"], "https://www.everyeye.it"),
-  news("multiplayerit", "Multiplayer.it", "https://multiplayer.it/feed/rss/homepage/", 1, ["gaming"], "https://multiplayer.it"),
-  news("3djuegos", "3DJuegos", "https://www.3djuegos.com/atom.xml", 1, ["gaming"], "https://www.3djuegos.com"),
-  news("eurogamer-de", "Eurogamer Germany", "https://www.eurogamer.de/feed", 1, ["gaming"], "https://www.eurogamer.de"),
-  news("ign-brasil", "IGN Brasil", "https://br.ign.com/feed.xml", 1, ["gaming"], "https://br.ign.com"),
-  news("invenglobal", "Inven Global", "https://feeds.feedburner.com/inven", 2, ["gaming", "business"], "https://www.invenglobal.com"),
+  // ---------------------------------------------------------------------------
+  // ENGLISH ONLY (owner's instruction, 2026-11-08).
+  //
+  // A Japanese desk, a Polish portal, a Spanish edition — all genuinely good
+  // sources, and all unreadable to somebody who asked for English. They were
+  // removed along with every other non-English edition below: 32 feeds, measured
+  // from their own headlines rather than guessed from the URL (scripts/langcheck.mjs
+  // does the measuring, and the numbers are in checkpoint8.md).
+  //
+  // The English editions of the same brands all stay: Automaton (EN), Eurogamer
+  // (EN), Gamereactor (EU, English), and IGN's flagship. Nothing was lost except
+  // the languages he cannot read.
+  //
+  // Kept as a note rather than a deleted block so nobody adds them back by
+  // accident thinking a gap was overlooked.
+  // ---------------------------------------------------------------------------
 
   // Gamedev — engine blogs and practitioners, not press releases.
   news("cgchannel", "CGChannel", "https://www.cgchannel.com/feed/", 2, ["gamedev"], "https://www.cgchannel.com"),
@@ -223,7 +218,6 @@ export const SOURCES = [
   // Retro, preservation and emulation — primary-source game history.
   news("hg101", "Hardcore Gaming 101", "https://www.hardcoregaming101.net/feed", 2, ["games", "tech"], "https://www.hardcoregaming101.net"),
   news("hiddenpalace", "Hidden Palace", "https://hiddenpalace.org/w/index.php?title=Special:RecentChanges&feed=atom", 2, ["games"], "https://hiddenpalace.org"),
-  news("gamepres", "Game Preservation Society", "https://www.gamepres.org/feed/", 1, ["games"], "https://www.gamepres.org"),
   news("retronauts", "Retronauts", "https://retronauts.com/feed", 2, ["games"], "https://retronauts.com"),
   news("gamingalexandria", "Gaming Alexandria", "https://www.gamingalexandria.com/wp/feed/", 2, ["games"], "https://www.gamingalexandria.com"),
   news("filfre", "The Digital Antiquarian", "https://www.filfre.net/feed/", 2, ["games"], "https://www.filfre.net"),
@@ -257,23 +251,11 @@ export const SOURCES = [
   news("beneaththetangles", "Beneath the Tangles", "https://beneaththetangles.com/feed/", 1, ["anime"], "https://beneaththetangles.com"),
   news("comicsbeat", "Comics Beat", "https://www.comicsbeat.com/feed/", 2, ["anime", "business"], "https://www.comicsbeat.com"),
 
-  // Japanese — hobby, VR and the domestic arcade scene.
-  news("dengekihobby", "Dengeki Hobby Web", "https://dengeki.com/feed", 1, ["anime"], "https://dengeki.com"),
-  news("mogulive", "MoguLive", "https://www.moguravr.com/feed/", 1, ["tech", "gaming"], "https://www.moguravr.com"),
-  news("panora", "Panora", "https://panora.tokyo/feed", 1, ["tech"], "https://panora.tokyo"),
+  // Japanese — hobby, VR and the domestic arcade scene. (Removed: English only.)
 
-  // Regional desks — one editorial judgement per country.
-  news("actugaming", "ActuGaming", "https://www.actugaming.net/feed/", 1, ["gaming"], "https://www.actugaming.net"),
-  news("gameblog", "Gameblog", "https://www.gameblog.fr/rss", 1, ["gaming"], "https://www.gameblog.fr"),
-  news("eurogamer-pl", "Eurogamer Poland", "https://www.eurogamer.pl/feed", 1, ["gaming"], "https://www.eurogamer.pl"),
-  news("eurogamer-pt", "Eurogamer Portugal", "https://www.eurogamer.pt/feed", 1, ["gaming"], "https://www.eurogamer.pt"),
-  news("eurogamer-es", "Eurogamer Spain", "https://www.eurogamer.es/feed", 1, ["gaming"], "https://www.eurogamer.es"),
+  // Regional desks — one editorial judgement per country. (Non-English editions
+  // removed; the English ones below stayed.)
   news("gamereactor", "Gamereactor", "https://www.gamereactor.eu/feed/", 1, ["gaming"], "https://www.gamereactor.eu"),
-  news("gamereactor-dk", "Gamereactor Denmark", "https://www.gamereactor.dk/feed/", 1, ["gaming"], "https://www.gamereactor.dk"),
-  news("gamereactor-no", "Gamereactor Norway", "https://www.gamereactor.no/feed/", 1, ["gaming"], "https://www.gamereactor.no"),
-  news("gamereactor-se", "Gamereactor Sweden", "https://www.gamereactor.se/feed/", 1, ["gaming"], "https://www.gamereactor.se"),
-  news("grampl", "Gram.pl", "https://www.gram.pl/rss/content.xml", 1, ["gaming"], "https://www.gram.pl"),
-  news("ign-benelux", "IGN Benelux", "https://nl.ign.com/feed.xml", 1, ["gaming"], "https://nl.ign.com"),
 
   // Retro and preservation — the primary sources, plus the people who reverse them.
   news("arcadeblogger", "Arcade Blogger", "https://www.arcadeblogger.com/feed/", 2, ["games", "tech"], "https://www.arcadeblogger.com"),

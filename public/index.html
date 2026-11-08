@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sift — the noise, sifted</title>
-<meta name="description" content="A live moodboard of gaming, anime, gamedev and AI news, filtered to one person's taste. No algorithm, no AI, no account.">
+<meta name="description" content="A moodboard of gaming, anime, gamedev and AI news in English, filtered to one person's taste. No algorithm, no AI, no account.">
 <meta name="color-scheme" content="dark light">
-<meta name="theme-color" content="#0c0b0a">
+<meta name="theme-color" content="#12100e">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script src="assets/theme.js"></script>
@@ -20,14 +20,21 @@
   <div class="masthead__inner">
     <a class="mark" href="./" aria-label="Sift, home">
       <span class="mark__word">Sift</span>
-      <span class="mark__rule" aria-hidden="true"></span>
     </a>
 
     <div class="masthead__side">
       <p class="live" id="live" role="status" aria-live="polite">
-        <span class="live__dot" aria-hidden="true"></span>
         <span class="live__text" id="live-text">warming up</span>
       </p>
+
+      <button class="refresh" id="refresh" type="button" title="Check for new stories">
+        <svg class="refresh__icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 11a8 8 0 1 0-1.9 6.1"></path>
+          <path d="M20 4.5V11h-6.4"></path>
+        </svg>
+        <span class="refresh__label">Refresh</span>
+      </button>
+
       <button class="iconbtn" id="theme" type="button" aria-label="Change theme" title="Theme">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7">
           <circle cx="12" cy="12" r="4.2"></circle>
@@ -83,7 +90,7 @@
 
 <noscript>
   <div class="noscript">
-    <p><strong>Sift needs JavaScript.</strong> It is one page that asks a database for the next thirty cards — no trackers, no third parties, nothing else.</p>
+    <p><strong>Sift needs JavaScript.</strong> It is one page that reads a single board file and paints the cards — no trackers, no third parties, nothing else.</p>
   </div>
 </noscript>
 

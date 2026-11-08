@@ -33,6 +33,12 @@ const noPush = args.includes("--no-push");
 const steps = [
   ["seed the archive from the live board", ["scripts/seed.mjs", "--db", db]],
   ["read the feeds", ["scripts/live-ingest.mjs", "--db", db]],
+  // The English-only rule, enforced on the whole table rather than only on new
+  // items. Ingest drops foreign stories as they arrive, but the seed step
+  // restores whatever the published board already contained, and a source that
+  // is removed from config leaves its old rows behind — so without this pass the
+  // rule would apply to tomorrow and never to today.
+  ["drop anything not in English", ["scripts/purge-language.mjs", "--db", db]],
   ["build dist/", ["scripts/build-static.mjs", "--db", db]],
 ];
 

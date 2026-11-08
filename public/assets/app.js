@@ -1,8 +1,8 @@
 /**
  * app.js — the board.
  *
- * One page, one job: ask the API for cards, paint them, and never lose the
- * reader's place while it does. No framework, no build step, no dependencies.
+ * One page, one job: read one static board file, paint cards, and never move
+ * under the reader's finger. No framework, no build step, no dependencies.
  *
  * Structure:
  *   1  constants + state
@@ -11,7 +11,7 @@
  *   4  hidden cards (localStorage)
  *   5  card rendering
  *   6  feed loading + paging
- *   7  live updates
+ *   7  refresh
  *   8  filters, search, URL
  *   9  theme
  *  10  boot
@@ -26,7 +26,6 @@ const API = {
 
 const PAGE_SIZE = 30;
 const MAX_CARDS = 240;
-const SYNC_EVERY_MS = 60_000;
 const SEARCH_DEBOUNCE_MS = 300;
 const HIDDEN_KEY = "sift.hidden";
 const THEME_KEY = "sift.theme";
@@ -35,14 +34,12 @@ const MAX_HIDDEN = 500;
 const state = {
   lanes: [],
   query: "",
-  board: null, // the whole ordered board, fetched once
+  board: null, // the whole ordered board
   filtered: [], // the board after lane/search filtering
   offset: 0, // how far into `filtered` the reader has scrolled
   loading: false,
+  refreshing: false,
   exhausted: false,
-  topBucket: null, // hour of the newest card, for the "N new" pill
-  topScore: 0,
-  pending: 0,
   total: 0,
   oldest: null,
   lastSync: 0,
@@ -62,10 +59,8 @@ const el = {
   search: document.getElementById("q"),
   live: document.getElementById("live"),
   liveText: document.getElementById("live-text"),
+  refresh: document.getElementById("refresh"),
   theme: document.getElementById("theme"),
-  newbar: document.getElementById("newbar"),
-  newbarCount: document.getElementById("newbar-count"),
-  newbarBtn: document.getElementById("newbar-btn"),
   footerStats: document.getElementById("footer-stats"),
 };
 
@@ -80,28 +75,73 @@ const node = (tag, className, text) => {
 
 /* ---------------------------------------------------------------- 3. FORMATTING */
 
-const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+const rtf = new Intl.RelativeTimeFormat("en", { numeric: "always" });
 
-/** "3 hours ago" but never "in 2 hours" — a feed date in the future is a clock bug. */
-function relativeTime(iso) {
+/**
+ * How long ago, in words — and never "in four days".
+ *
+ * A feed whose clock is wrong dates an item in the future, and a moodboard
+ * reading "in 4 days" above "2 hours ago" looks broken. A future date is not
+ * information, so it reads as just now and the date line carries the truth.
+ */
+function relativeTime(iso, now = Date.now()) {
   const then = Date.parse(iso);
   if (!Number.isFinite(then)) return "";
-  const seconds = Math.round((then - Date.now()) / 1000);
-  const future = seconds > 0;
-  const abs = Math.abs(seconds);
-  const value = future ? -abs : abs;
+  const seconds = (then - now) / 1000;
+  const abs = Math.abs(Math.round(seconds));
 
+  if (seconds > 0) return "just now"; // future: a feed clock bug, not a fact
   if (abs < 45) return "just now";
-  if (abs < 3600) return rtf.format(Math.round(value / 60), "minute");
-  if (abs < 86_400) return rtf.format(Math.round(value / 3600), "hour");
-  if (abs < 7 * 86_400) return rtf.format(Math.round(value / 86_400), "day");
-  return new Date(then).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  if (abs < 3600) return rtf.format(-Math.round(abs / 60), "minute");
+  if (abs < 86_400) return rtf.format(-Math.round(abs / 3600), "hour");
+  return rtf.format(-Math.round(abs / 86_400), "day");
+}
+
+/**
+ * The calendar day, always — "8 Nov", or "20 Oct 2026" once the year differs
+ * from today's. Shown beside the relative time so a card never leaves you
+ * guessing when "yesterday" actually was.
+ */
+function dayMonth(iso, now = new Date()) {
+  const then = Date.parse(iso);
+  if (!Number.isFinite(then)) return "";
+  const date = new Date(then);
+  const sameYear = date.getFullYear() === new Date(now).getFullYear();
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    ...(sameYear ? {} : { year: "numeric" }),
+  });
+}
+
+/** "3 hours ago · 8 Nov" while recent, just "20 Oct 2026" once it is old news. */
+function whenLabel(iso, now = Date.now()) {
+  const then = Date.parse(iso);
+  if (!Number.isFinite(then)) return "";
+  const days = (now - then) / 86_400_000;
+  const date = dayMonth(iso, new Date(now));
+  if (days >= 7) return date;
+  const relative = relativeTime(iso, now);
+  return relative ? `${relative} · ${date}` : date;
+}
+
+function fullStamp(iso) {
+  const then = Date.parse(iso);
+  if (!Number.isFinite(then)) return "";
+  return new Date(then).toLocaleString("en-GB", {
+    dateStyle: "full",
+    timeStyle: "short",
+  });
 }
 
 function shortDate(iso) {
-  const time = Date.parse(iso);
-  if (!Number.isFinite(time)) return "";
-  return new Date(time).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+  const then = Date.parse(iso);
+  if (!Number.isFinite(then)) return "";
+  return new Date(then).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 /* ------------------------------------------------------------- 4. HIDDEN CARDS */
@@ -127,15 +167,27 @@ const hidden = new Set(readHidden());
 
 /* ------------------------------------------------------------- 5. CARD RENDERING */
 
+const LANE_LABEL = {
+  games: "My games",
+  gaming: "Gaming",
+  indie: "Indie",
+  anime: "Anime",
+  gamedev: "Gamedev",
+  ai: "AI",
+  tech: "Tech",
+  business: "Industry",
+  creator: "Creators",
+};
+
 function buildCard(item) {
   const card = node("a", "card");
   card.href = item.url;
   card.target = "_blank";
   card.rel = "noopener noreferrer";
   card.dataset.key = item.urlKey;
-  card.dataset.lane = item.lanes[0] || "gaming";
-
-  card.append(node("span", "card__mark"));
+  // No lane at all is a real state (an aggregator link nothing scored), and it
+  // should read as plain rather than borrow the colour of some other lane.
+  card.dataset.lane = item.lanes[0] || "";
 
   // A card with no usable image does not get an empty 16:9 hole with a letter in
   // it — that reads as a broken tile and wastes half a column. It becomes a type
@@ -180,11 +232,10 @@ function buildCard(item) {
   const body = node("div", "card__body");
 
   const meta = node("p", "card__meta");
+  if (item.lanes.length) {
+    meta.append(node("span", "card__lane", LANE_LABEL[item.lanes[0]] || item.lanes[0]));
+  }
   meta.append(node("span", "card__source", item.sourceName));
-  meta.append(node("span", "card__dot", "·"));
-  const when = node("span", "card__when", relativeTime(item.publishedAt));
-  when.dataset.iso = item.publishedAt;
-  meta.append(when);
   body.append(meta);
 
   const title = node("h2", "card__title", item.title);
@@ -193,6 +244,15 @@ function buildCard(item) {
   if (item.summary) {
     body.append(node("p", "card__sum", item.summary));
   }
+
+  // The stamp sits at the foot of the card, where a dateline belongs — not
+  // crammed into the source line. Date always, relative time while it is recent.
+  const foot = node("p", "card__when");
+  foot.textContent = whenLabel(item.publishedAt);
+  foot.dataset.iso = item.publishedAt;
+  const stamp = fullStamp(item.publishedAt);
+  if (stamp) foot.title = stamp;
+  body.append(foot);
 
   // `append(null)` would stringify into a literal "null" text node, so the type
   // card appends only its body.
@@ -257,6 +317,7 @@ function renderSkeletons(count = 8) {
       node("div", "skeleton__line skeleton__line--title"),
       node("div", "skeleton__line skeleton__line--title2"),
       node("div", "skeleton__line skeleton__line--sum"),
+      node("div", "skeleton__line skeleton__line--sum2"),
     );
     skeleton.append(body);
     fragment.append(skeleton);
@@ -286,10 +347,6 @@ function setStatus(text) {
  * array slicing. `state.board` holds the full ordered array; `state.filtered`
  * holds the view after lane/search filtering; `state.offset` is how far the
  * reader has scrolled into it.
- *
- * This replaced a live API when the site moved to GitHub Pages. The ordering is
- * still decided by the same SQL that ran at the edge — it just runs at build time
- * now — so a card's position is identical to what the API would have returned.
  */
 function applyFilters(items) {
   const lanes = state.lanes;
@@ -313,9 +370,15 @@ async function request(url, options) {
   return response.json();
 }
 
-async function loadBoard() {
-  if (state.board) return state.board;
-  const data = await request(API.board);
+/**
+ * `cacheBust` asks GitHub Pages for the file itself instead of whatever it
+ * cached a minute ago. Only the refresh button uses it: a normal first load
+ * should ride the CDN, a clicked refresh should tell the truth.
+ */
+async function loadBoard({ cacheBust = false } = {}) {
+  if (state.board && !cacheBust) return state.board;
+  const url = cacheBust ? `${API.board}?t=${Date.now()}` : API.board;
+  const data = await request(url);
   state.board = data.items || [];
   state.total = data.meta?.total ?? state.board.length;
   state.oldest = data.meta?.oldest ?? null;
@@ -331,24 +394,19 @@ function hasMorePages() {
   return state.offset < state.filtered.length;
 }
 
-async function loadFirstPage() {
+async function loadFirstPage({ cacheBust = false } = {}) {
   state.loading = true;
   state.exhausted = false;
   state.offset = 0;
-  state.pending = 0;
-  hideNewBar();
   clearBoard();
   setStatus("");
   renderSkeletons();
 
   try {
-    const board = await loadBoard();
+    const board = await loadBoard({ cacheBust });
     clearSkeletons();
 
     state.filtered = applyFilters(board);
-    const top = state.filtered[0];
-    state.topBucket = top ? top.bucket : null;
-    state.topScore = top ? top.score : 0;
 
     const items = pageItems();
     state.offset += items.length;
@@ -422,7 +480,7 @@ function showEmpty(overrideTitle, reason) {
     el.emptyTitle.textContent = "Nothing here yet.";
     el.emptyBody.textContent = state.query || state.lanes.length
       ? "No story matches that filter. Clear it and the board comes back."
-      : "The board is still filling up. It reads its sources every minute.";
+      : "The board is still filling up. Press Refresh to look again.";
     el.emptyAction.textContent = "Clear filters";
     el.emptyAction.dataset.action = "clear";
     return;
@@ -440,94 +498,63 @@ function showEmptyIfNeeded() {
 function showError(error) {
   el.empty.hidden = false;
   el.emptyTitle.textContent = "The feed didn't answer.";
-  el.emptyBody.textContent = `${error.message}. It might be the first run of the day — give it a moment.`;
+  el.emptyBody.textContent = `${error.message}. Press Refresh to try again.`;
   el.emptyAction.textContent = "Try again";
   el.emptyAction.dataset.action = "retry";
 }
 
-/* -------------------------------------------------------------- 7. LIVE UPDATES */
+/* ---------------------------------------------------------------- 7. REFRESH */
 
+/**
+ * Nothing polls. Not on a timer, not on tab focus. A board that reorders
+ * underneath someone mid-scroll is worse than a board that is a few minutes
+ * stale, so new material only arrives when the reader asks for it.
+ */
 function updateLive() {
-  const age = state.lastSync ? Date.now() - state.lastSync : Infinity;
-  const minutes = Math.floor(age / 60_000);
-
   if (!state.lastSync) {
-    el.liveText.textContent = "no sync yet";
-    el.live.className = "live is-stale";
+    el.liveText.textContent = "no update yet";
+    el.live.classList.add("is-stale");
     return;
   }
-  if (age < 90_000) el.live.className = "live";
-  else if (age < 15 * 60_000) el.live.className = "live";
-  else el.live.className = "live is-stale";
-
-  el.liveText.textContent = minutes < 1 ? "live · just now" : `live · ${minutes}m ago`;
+  const minutes = Math.floor((Date.now() - state.lastSync) / 60_000);
+  el.liveText.textContent = minutes < 1 ? "updated just now" : `updated ${minutes}m ago`;
+  el.live.classList.toggle("is-stale", minutes >= 180);
 }
 
-/**
- * There is no server to poke any more: the board is rebuilt by a scheduled
- * GitHub Action, so "new material" arrives as a new api/board.json. All this
- * does now is keep the live pill honest about when that build happened.
- */
-function pingSync() {
-  updateLive();
+function setRefreshState(busy) {
+  el.refresh.classList.toggle("is-busy", busy);
+  el.refresh.disabled = busy;
+  el.refresh.setAttribute("aria-busy", String(busy));
+  el.refresh.querySelector(".refresh__label").textContent = busy ? "Checking" : "Refresh";
 }
 
-/**
- * "New" means: sorts above the current top card in the board's own order. That is
- * a (bucket, score) comparison — a strong story from an earlier block never
- * counts as new just because we only saw it now.
- */
-function isAboveTop(item) {
-  if (!state.topBucket) return true;
-  if (item.bucket !== state.topBucket) return item.bucket > state.topBucket;
-  return item.score > state.topScore;
-}
-
-/**
- * A static build cannot be polled for arrivals. Instead, refresh the board file
- * itself: if the build that made it is newer than the one we are showing, offer
- * the reader the new cards.
- */
-async function checkForNew() {
-  if (state.loading) return;
+async function refreshBoard() {
+  if (state.refreshing || state.loading) return;
+  state.refreshing = true;
+  setRefreshState(true);
+  const startedAt = Date.now();
 
   try {
-    const data = await request(`${API.board}?t=${Date.now()}`);
-    const meta = data.meta || {};
-    const fresh = (data.items || []).filter((item) => isAboveTop(item) && !hidden.has(item.urlKey));
-    state.total = meta.total ?? state.total;
-    if (meta.lastSync) state.lastSync = meta.lastSync;
+    await loadFirstPage({ cacheBust: true });
+    window.scrollTo({ top: 0, behavior: "auto" });
+    loadFooterStats();
+  } catch (error) {
+    showError(error);
+  } finally {
+    // A refresh that returns in 40ms looks like nothing happened. Hold the
+    // busy state briefly so the button visibly did something.
+    const elapsed = Date.now() - startedAt;
+    if (elapsed < 450) await new Promise((resolve) => setTimeout(resolve, 450 - elapsed));
+    state.refreshing = false;
+    setRefreshState(false);
     updateLive();
-
-    if (!fresh.length) {
-      hideNewBar();
-      return;
-    }
-    el.newbarCount.textContent = String(fresh.length);
-    el.newbar.hidden = false;
-  } catch {
-    /* a failed poll is not worth a message; the next one will tell */
   }
-}
-
-function hideNewBar() {
-  el.newbar.hidden = true;
-  state.pending = 0;
-}
-
-/** Drop the cached board so the next load picks up the newest build. */
-async function applyNewItems() {
-  hideNewBar();
-  state.board = null;
-  window.scrollTo({ top: 0, behavior: "auto" });
-  await loadFirstPage();
 }
 
 /* -------------------------------------------------- 8. FILTERS, SEARCH AND URL */
 
 function buildPills() {
   const lanes = [
-    { id: "", label: "All" },
     { id: "games", label: "My games" },
     { id: "gaming", label: "Gaming" },
     { id: "indie", label: "Indie" },
@@ -540,7 +567,6 @@ function buildPills() {
   ];
 
   for (const lane of lanes) {
-    if (!lane.id) continue;
     const pill = node("button", "pill", lane.label);
     pill.type = "button";
     pill.dataset.lane = lane.id;
@@ -560,7 +586,7 @@ function readUrl() {
     .split(",")
     .map((lane) => lane.trim())
     .filter(Boolean)
-    .slice(0, 1); // one lane at a time keeps the board readable; the API supports more
+    .slice(0, 1); // one lane at a time keeps the board readable
   state.query = (params.get("q") || "").trim();
   el.search.value = state.query;
   syncPills();
@@ -604,7 +630,7 @@ function currentTheme() {
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "light" ? "#f7f4ee" : "#0c0b0a");
+  if (meta) meta.setAttribute("content", theme === "light" ? "#f3efe8" : "#12100e");
   try {
     localStorage.setItem(THEME_KEY, theme);
   } catch {
@@ -635,11 +661,10 @@ function wireEvents() {
   });
   el.searchForm.addEventListener("submit", (event) => event.preventDefault());
 
+  el.refresh.addEventListener("click", refreshBoard);
   el.theme.addEventListener("click", () => {
     applyTheme(currentTheme() === "light" ? "dark" : "light");
   });
-
-  el.newbarBtn.addEventListener("click", applyNewItems);
 
   el.emptyAction.addEventListener("click", () => {
     const action = el.emptyAction.dataset.action;
@@ -650,7 +675,7 @@ function wireEvents() {
       return;
     }
     if (action === "retry") {
-      loadFirstPage();
+      refreshBoard();
       return;
     }
     state.lanes = [];
@@ -680,28 +705,22 @@ function wireEvents() {
       event.preventDefault();
       el.search.focus();
     }
+    // R refreshes, the way it does in every mail client. Not while typing.
+    if (event.key === "r" && !typing && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      event.preventDefault();
+      refreshBoard();
+    }
     if (event.key === "Escape" && typing) el.search.blur();
   });
 
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      pingSync().then(checkForNew);
-    }
-  });
-
-  setInterval(() => {
-    updateLive();
-    if (document.visibilityState === "visible") {
-      pingSync().then(checkForNew);
-    }
-  }, SYNC_EVERY_MS);
-
-  // Relative timestamps go stale on a tab left open all morning.
+  // Relative timestamps go stale on a tab left open all morning. Re-label the
+  // text only; no network, nothing moves.
   setInterval(() => {
     for (const card of el.cards.querySelectorAll(".card")) {
-      const when = card.querySelector(".card__when");
-      if (when?.dataset.iso) when.textContent = relativeTime(when.dataset.iso);
+      const foot = card.querySelector(".card__when");
+      if (foot?.dataset.iso) foot.textContent = whenLabel(foot.dataset.iso);
     }
+    updateLive();
   }, 60_000);
 }
 
@@ -712,7 +731,7 @@ async function loadFooterStats() {
     if (stats?.total) {
       el.footerStats.textContent =
         `${stats.total.toLocaleString()} stories · ${stats.perSource.length} sources feeding · ` +
-        `last sync ${stats.lastSync ? relativeTime(new Date(stats.lastSync).toISOString()) : "never"}`;
+        `last update ${stats.lastSync ? relativeTime(new Date(stats.lastSync).toISOString()) : "never"}`;
     }
   } catch {
     /* the footer is decoration; a failure is not worth a red box */
@@ -725,13 +744,8 @@ async function boot() {
   wireEvents();
   updateLive();
 
-  // Paint whatever is already in the database before asking for new material.
   await loadFirstPage();
   loadFooterStats();
-
-  // Then ask the edge to go and look, and poll for anything that landed.
-  await pingSync();
-  await checkForNew();
 }
 
 boot();

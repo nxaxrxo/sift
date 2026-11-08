@@ -88,7 +88,123 @@ function penaltyPoints(haystack) {
   return { total, fired };
 }
 
+/* ------------------------------------------------------------- language gate */
+
+/**
+ * The board is English only (owner's instruction). Removing the non-English
+ * editions from config handles the bulk, but a feed can still syndicate the
+ * occasional foreign item — an imported review, a translated press release — and
+ * one Japanese headline on an English board is the same bug as a whole Japanese
+ * feed.
+ *
+ * This errs hard towards keeping. A wrongly dropped story is invisible; a wrongly
+ * kept one is obvious and gets fixed. So it only fires on evidence a piece of
+ * English text could not plausibly produce.
+ *
+ *   1. Any character outside the Latin script — kana, hanzi, hangul, cyrillic,
+ *      greek, thai, arabic, hebrew. One word is conclusive: English has none.
+ *   2. Accented letters that English does not use — ą ł ż ś ę (Polish), ã õ (the
+ *      Portuguese nasal vowels), å ø æ (Nordic), ğ ş ı (Turkish), ß (German),
+ *      ő ű (Hungarian). Two of those in one headline is not a typo.
+ *   3. A cluster of that language's own function words — "na", "się", "nie",
+ *      "jest", "der", "und", "avec", "pour", "não", "para", "gli", "della".
+ *      Three hits, or two of the very common ones, and it is not English.
+ *
+ * A short title, a product name and a code-heavy headline all pass untouched,
+ * which is why "AI listed as: Claude 5, GPT 6.1" and "Mega Drive Fan – 1992-05-15"
+ * survive while "Forza Horizon 6 doczekała się paru pożądanych zmian" does not.
+ */
+const NON_LATIN = /[\u0370-\u03ff\u0400-\u04ff\u0590-\u05ff\u0600-\u06ff\u0e00-\u0e7f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]/;
+
+const FOREIGN_ACCENTS = /[ąłżśęćńóźćĄŁŻŚĘĆŃÓŹßåøæÅØÆğşıĞŞİőűŐŰãõÃÕüöäÜÖÄřěůžýŘĚŮŽÝďťňĎŤŇ]/;
+
+const FOREIGN_WORDS = new Set([
+  // Polish
+  "nie", "jest", "się", "oraz", "przez", "dla", "tego", "który", "będzie",
+  "także", "może", "tylko", "bardzo", "właśnie", "którego", "której", "takiego",
+  "lat", "roku", "nowa", "nowy", "nowe", "już", "gra", "gry", "gier", "tym",
+  // German
+  "der", "die", "das", "und", "mit", "für", "nicht", "eine", "einen", "wird",
+  "werden", "auch", "sich", "nach", "beim", "durch", "gegen", "wurde", "dieser",
+  "auf", "ist", "von", "bei", "aus", "ein", "den", "dem", "neue", "neuer", "neuen",
+  "zeigt", "über", "jetzt", "mehr", "sind", "haben", "lässt", "macht", "steht",
+  "kommt", "ohne", "gibt", "soll", "kann", "ihre", "seine", "diese", "diesem",
+  // French
+  "les", "des", "une", "est", "dans", "pour", "avec", "sur", "pas", "qui",
+  "que", "plus", "sont", "cette", "aux", "par", "mais", "nous", "vous", "être",
+  "comme", "toujours", "depuis", "encore", "selon", "au", "du", "et", "en",
+  "la", "le", "de", "se", "ce", "il", "elle", "ses", "son",
+  // Spanish / Portuguese
+  "los", "las", "una", "por", "para", "con", "como", "pero", "más", "del",
+  "não", "dos", "das", "seu", "sua", "está", "pelo", "pela", "mais", "também",
+  "sobre", "entre", "quando", "onde", "muito", "todavía", "después", "ainda",
+  "agora", "el", "es", "su", "al", "lo", "ser", "os", "em", "um", "é", "são",
+  "sao", "já", "da", "do", "na", "no", "todo", "toda", "nos", "nas",
+  // Italian
+  "gli", "della", "delle", "degli", "che", "non", "sono", "anche", "dal",
+  "nel", "nella", "alla", "allo", "questo", "questa", "essere", "hanno",
+  "senza", "dopo", "sulla", "dello", "dei", "con", "per", "una", "il",
+  // Dutch / Nordic
+  "het", "een", "van", "voor", "met", "niet", "zijn", "wordt", "worden",
+  "och", "att", "inte", "som", "med", "till", "har", "kan", "eller", "ikke",
+  "blir", "efter", "deze", "naar", "maar", "ook", "nog",
+]);
+
+/**
+ * English function words. Deliberately only the ones that really are function
+ * words: "met" and "a" are left out because a Dutch or Portuguese headline uses
+ * them too, and counting them on both sides would cancel the signal out.
+ */
+const ENGLISH_WORDS = new Set([
+  "the", "an", "of", "to", "in", "for", "on", "with", "and", "or", "is", "are",
+  "was", "were", "be", "been", "will", "would", "can", "could", "has", "have",
+  "had", "not", "but", "at", "by", "as", "it", "its", "this", "that", "these",
+  "those", "from", "into", "over", "after", "before", "about", "how", "why",
+  "what", "when", "where", "who", "new", "now", "more", "most", "you", "your",
+  "we", "our", "they", "their", "his", "her", "my", "out", "up", "all", "one",
+  "so", "do", "does", "did", "says", "said", "first", "best", "top", "game",
+  "games", "play", "players", "gets", "get", "just", "still", "only", "than",
+]);
+
+export function isEnglishText(text) {
+  const value = String(text ?? "");
+  if (!value) return true;
+  if (NON_LATIN.test(value)) return false;
+
+  // Two distinct accented letters, or one that repeats — enough to be a language
+  // rather than a stray character. A single "ø" in a product name is not.
+  const accented = [...new Set(value.match(new RegExp(FOREIGN_ACCENTS, "g")) || [])];
+  if (accented.length >= 2) return false;
+  if (accented.length === 1) {
+    const repeats = (value.match(new RegExp(FOREIGN_ACCENTS, "g")) || []).length;
+    if (repeats >= 3) return false;
+  }
+
+  const words = value.toLowerCase().match(/\p{L}+/gu) || [];
+  if (words.length < 3) return true; // too short to judge; never condemn it
+
+  const foreign = words.filter((word) => FOREIGN_WORDS.has(word)).length;
+  const english = words.filter((word) => ENGLISH_WORDS.has(word)).length;
+
+  // Three foreign function words and English is out of the question.
+  if (foreign >= 3) return false;
+  // Two, with more of them than English ones, and it is a foreign sentence.
+  if (foreign >= 2 && foreign > english) return false;
+  // One foreign word is only evidence when it is a fair slice of a short
+  // headline AND nothing English appears at all — that is "Lista de Troféus de
+  // GTA 6", not "Marty O'Donnell loses his race".
+  if (foreign >= 1 && english === 0 && foreign / words.length >= 0.2) return false;
+  // One foreign function word, not a single English one, and the text carries a
+  // letter English does not use ("schlägt", "über", "años"). That combination is
+  // never an English headline: "Mass-Effect-Modder schlägt Alarm" has the shape
+  // of English and none of the substance.
+  if (foreign >= 1 && english === 0 && accented.length >= 1) return false;
+
+  return true;
+}
+
 function dropReason(haystack) {
+  if (!isEnglishText(haystack)) return "not-english";
   for (const group of TASTE.drop) {
     if (group.some((term) => containsTerm(haystack, term))) return group[0];
   }

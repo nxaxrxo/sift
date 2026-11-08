@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { scoreItem, setAnimeTerms, cardSummary, isStorable } from "../functions/_lib/score.mjs";
+import { scoreItem, setAnimeTerms, cardSummary, isStorable, isEnglishText } from "../functions/_lib/score.mjs";
 import { SOURCES } from "../functions/_lib/config.mjs";
 import { ANIME_TERMS } from "../functions/_lib/anime-terms.mjs";
 import { timeBucket } from "../functions/_lib/db.mjs";
@@ -204,6 +204,79 @@ test("config_contentLanedSourceEarnsItsLane", () => {
     new Date("2026-11-08T12:00:00Z"),
   );
   assert.equal(offTopic.lanes.length, 0, "an off-topic link must not claim a lane");
+});
+
+test("config_isEnglishOnly", () => {
+  // The board is English only. These are the feeds that were removed for it —
+  // if one comes back, this fails rather than silently re-polluting the board.
+  const banned = [
+    "4gamer", "animeanime", "denfaminico", "gamespark", "gigazine", "insidegames",
+    "gamewatch", "automaton-jp", "gamekult", "gryonline", "gcores", "jeuxvideo",
+    "everyeye", "multiplayerit", "3djuegos", "eurogamer-de", "eurogamer-pl",
+    "eurogamer-es", "eurogamer-pt", "ign-brasil", "invenglobal", "gamepres",
+    "dengekihobby", "mogulive", "panora", "actugaming", "gameblog",
+    "gamereactor-dk", "gamereactor-no", "gamereactor-se", "grampl", "ign-benelux",
+  ];
+  const present = SOURCES.filter((source) => banned.includes(source.id)).map((s) => s.id);
+  assert.deepEqual(present, [], `non-English sources are back: ${present.join(", ")}`);
+
+  // The English editions of the same brands must survive the purge.
+  const ids = new Set(SOURCES.map((source) => source.id));
+  for (const kept of ["automaton", "eurogamer", "gamereactor", "ign"]) {
+    assert.ok(ids.has(kept), `${kept} (English edition) was removed by mistake`);
+  }
+});
+
+test("isEnglishText_dropsNonLatinScript", () => {
+  assert.equal(isEnglishText("『ポケモンGO』“激レア”な色違いが出現"), false);
+  assert.equal(isEnglishText("[취재] 치열한 이전 신경전"), false);
+  assert.equal(isEnglishText("放下枷锁，《火焰纹章》就是现在最好的日式RPG"), false);
+});
+
+test("isEnglishText_dropsLatinLanguagesItCanProve", () => {
+  // Polish
+  assert.equal(isEnglishText("Forza Horizon 6 doczekała się paru pożądanych zmian i aut"), false);
+  assert.equal(isEnglishText("Tego nikt się nie spodziewał. Symulator wojskowy oferuje teraz"), false);
+  // French
+  assert.equal(isEnglishText("Pour la sortie de Zelda, Google revient en 1998"), false);
+  // German
+  assert.equal(isEnglishText("Mass-Effect-Modder schlägt Alarm: KI und Vibe Coding"), false);
+  // Portuguese / Spanish
+  assert.equal(isEnglishText("Criar um novo Mass Effect pode custar mais de 200 milhões"), false);
+  assert.equal(isEnglishText("Unity ha mantenido conversaciones para ser adquirida"), false);
+});
+
+test("isEnglishText_keepsEveryKindOfEnglishHeadline", () => {
+  const keep = [
+    "WoW: Forever is the biggest launch in World of Warcraft history, says Blizzard",
+    // Title case with no lowercase function words at all
+    "AI finally sleeps, Gemini 4 Carbon, ETH cracked, energy-based models",
+    "Mega Drive Fan – 1992-05-15 – Appendix – Mega-CD Fan Volume 2",
+    "Preview: 'Marvel Midnight' Titles Issue #3 Variant Covers",
+    "Blizzard SHUT US DOWN??",
+    "Star Wars Galactic Racer",
+    // Short, name-like
+    "Impostor Month Begins!",
+    "Defold Newsletter October 2026",
+    // Accented English and borrowed names must survive
+    "Pokémon Legends Z-A sells 4 million in its first week",
+    "Naoki Yoshida on why Final Fantasy XIV keeps growing",
+  ];
+  for (const title of keep) {
+    assert.equal(isEnglishText(title), true, `dropped English: ${title}`);
+  }
+});
+
+test("scoreItem_dropsAForeignItemEvenFromAnEnglishFeed", () => {
+  // The safety net: config no longer carries non-English feeds, but one can still
+  // syndicate a foreign item. That must not reach the board.
+  const result = scoreItem(
+    item({ title: "『ドラクエ』カセット風カードケースのデザインが良すぎる", summary: "" }),
+    newsSource(2),
+    NOW,
+  );
+  assert.equal(result.drop, "not-english");
+  assert.equal(isStorable(result), false);
 });
 
 test("config_sourceWeightsAreSane", () => {
