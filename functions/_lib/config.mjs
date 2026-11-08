@@ -144,6 +144,91 @@ export const SOURCES = [
   yt("yt-2minpapers", "Two Minute Papers", "UCbfYPyITQ-7l4upoX8nvctg", 3, ["creator", "ai"]),
   yt("yt-bycloud", "bycloud", "UCgfe2ooZD3VJPB6aJAnuQng", 3, ["creator", "ai"]),
   yt("yt-aisearch", "AI Search", "UCIgnGlGkVRhd4qNFcEwLL4A", 3, ["creator", "ai"]),
+
+  /* ---------------------------------------------------------------- NICHE
+   * The outlets above are the mainstream every aggregator carries. Everything
+   * below exists so the board is not just what everybody else is reading:
+   * indie-only press, animation craft, Japanese and non-English desks, engine
+   * blogs, preservation projects, FGC, speedrunning, AI research.
+   *
+   * Every URL here was fetched and confirmed to return a live feed with an item
+   * from the last few months. One that breaks later should be removed, not
+   * silently ignored — a dead source that never dies fills the log with noise.
+   */
+
+  // Indie press and criticism — small studios, essays, not wire copy.
+  news("advgamers", "Adventure Gamers", "https://adventuregamers.com/feed", 2, ["games", "indie"], "https://adventuregamers.com"),
+  news("buriedtreasure", "Buried Treasure", "https://buried-treasure.org/feed/", 2, ["indie"], "https://buried-treasure.org"),
+  news("insertcredit", "Insert Credit", "https://insertcredit.com/rss/", 2, ["gaming", "indie"], "https://insertcredit.com"),
+  news("killscreen", "Kill Screen", "https://www.killscreen.com/rss/", 2, ["indie"], "https://killscreen.com"),
+  news("moegamer", "Moegamer", "https://moegamer.net/feed/", 2, ["anime", "games"], "https://moegamer.net"),
+  news("rogueliker", "Rogueliker", "https://rogueliker.com/feed/", 1, ["indie", "games"], "https://rogueliker.com"),
+  news("superjump", "Super Jump Magazine", "https://www.superjumpmagazine.com/feed/", 2, ["indie", "gaming"], "https://www.superjumpmagazine.com"),
+  news("itchnews", "itch.io News", "https://itch.io/blog.rss", 2, ["indie"], "https://itch.io"),
+  news("gameluster", "GameLuster", "https://gameluster.com/feed/", 1, ["gaming"], "https://gameluster.com"),
+
+  // Anime and manga, English — publishers and critics, not a newswire.
+  news("animefeminist", "Anime Feminist", "https://www.animefeminist.com/feed/", 2, ["anime"], "https://www.animefeminist.com"),
+  news("animeherald", "Anime Herald", "https://animeherald.com/feed/", 2, ["anime"], "https://animeherald.com"),
+  news("animehunch", "AnimeHunch", "https://animehunch.com/feed/", 1, ["anime"], "https://animehunch.com"),
+  news("kodansha", "Kodansha USA", "https://kodansha.us/feed/", 2, ["anime"], "https://kodansha.us"),
+  news("mangabookshelf", "Manga Bookshelf", "https://mangabookshelf.com/feed/", 1, ["anime"], "https://mangabookshelf.com"),
+  news("sakuga", "Sakuga Blog", "https://blog.sakugabooru.com/feed/", 2, ["anime"], "https://blog.sakugabooru.com"),
+  news("theoasg", "The OASG", "https://theoasg.com/feed/", 1, ["anime"], "https://theoasg.com"),
+  news("icv2", "ICv2", "https://www.icv2.com/rss/", 1, ["anime", "business"], "https://www.icv2.com"),
+
+  // Japanese desks — a whole news surface the English press never prints.
+  news("4gamer", "4Gamer.net", "https://www.4gamer.net/rss/index.xml", 2, ["gaming", "games"], "https://www.4gamer.net"),
+  news("animeanime", "AnimeAnime", "https://animeanime.jp/rss20/index.rdf", 1, ["anime"], "https://animeanime.jp"),
+  news("denfaminico", "Denfaminicogamer", "https://news.denfaminicogamer.jp/feed", 2, ["gaming"], "https://news.denfaminicogamer.jp"),
+  news("gamespark", "Game*Spark", "https://www.gamespark.jp/rss20/index.rdf", 2, ["gaming", "indie"], "https://www.gamespark.jp"),
+  news("gigazine", "GIGAZINE", "https://gigazine.net/news/rss_2.0/", 1, ["tech"], "https://gigazine.net"),
+  news("insidegames", "Inside Games", "https://www.inside-games.jp/rss20/index.rdf", 2, ["gaming"], "https://www.inside-games.jp"),
+  news("gamewatch", "Game Watch", "https://game.watch.impress.co.jp/data/rss/1.0/gmw/feed.rdf", 1, ["gaming"], "https://game.watch.impress.co.jp"),
+  news("automaton-jp", "Automaton (JP)", "https://automaton-media.com/feed/", 2, ["gaming"], "https://automaton-media.com"),
+
+  // Non-English regional press — each one is a separate editorial judgement.
+  news("gamekult", "Gamekult", "https://www.gamekult.com/feed.xml", 2, ["gaming"], "https://www.gamekult.com"),
+  news("gryonline", "Gry-Online", "https://www.gry-online.pl/rss/news.xml", 2, ["gaming"], "https://www.gry-online.pl"),
+  news("gcores", "Gcores", "https://www.gcores.com/rss", 2, ["gaming"], "https://www.gcores.com"),
+  news("jeuxvideo", "Jeuxvideo.com", "https://www.jeuxvideo.com/rss/rss.xml", 1, ["gaming"], "https://www.jeuxvideo.com"),
+  news("everyeye", "Everyeye.it", "https://www.everyeye.it/feed/feed_news_rss.asp", 1, ["gaming"], "https://www.everyeye.it"),
+  news("multiplayerit", "Multiplayer.it", "https://multiplayer.it/feed/rss/homepage/", 1, ["gaming"], "https://multiplayer.it"),
+  news("3djuegos", "3DJuegos", "https://www.3djuegos.com/atom.xml", 1, ["gaming"], "https://www.3djuegos.com"),
+  news("eurogamer-de", "Eurogamer Germany", "https://www.eurogamer.de/feed", 1, ["gaming"], "https://www.eurogamer.de"),
+  news("ign-brasil", "IGN Brasil", "https://br.ign.com/feed.xml", 1, ["gaming"], "https://br.ign.com"),
+  news("invenglobal", "Inven Global", "https://feeds.feedburner.com/inven", 2, ["gaming", "business"], "https://www.invenglobal.com"),
+
+  // Gamedev — engine blogs and practitioners, not press releases.
+  news("cgchannel", "CGChannel", "https://www.cgchannel.com/feed/", 2, ["gamedev"], "https://www.cgchannel.com"),
+  news("gamedevnet", "Gamedev.net", "https://www.gamedev.net/rss/", 2, ["gamedev"], "https://www.gamedev.net"),
+  news("gamefromscratch", "GameFromScratch", "https://gamefromscratch.com/feed/", 2, ["gamedev", "indie"], "https://gamefromscratch.com"),
+  news("bevy", "Bevy Engine", "https://bevyengine.org/atom.xml", 2, ["gamedev"], "https://bevyengine.org"),
+  news("defold", "Defold", "https://defold.com/feed.xml", 2, ["gamedev"], "https://defold.com"),
+  news("gamemaker", "GameMaker", "https://gamemaker.io/blog/rss", 1, ["gamedev"], "https://gamemaker.io"),
+  news("sorenjohnson", "Designer Notes", "https://www.designer-notes.com/feed/", 2, ["gamedev"], "https://www.designer-notes.com"),
+
+  // Retro, preservation and emulation — primary-source game history.
+  news("hg101", "Hardcore Gaming 101", "https://www.hardcoregaming101.net/feed", 2, ["games", "tech"], "https://www.hardcoregaming101.net"),
+  news("hiddenpalace", "Hidden Palace", "https://hiddenpalace.org/w/index.php?title=Special:RecentChanges&feed=atom", 2, ["games"], "https://hiddenpalace.org"),
+  news("gamepres", "Game Preservation Society", "https://www.gamepres.org/feed/", 1, ["games"], "https://www.gamepres.org"),
+  news("retronauts", "Retronauts", "https://retronauts.com/feed", 2, ["games"], "https://retronauts.com"),
+  news("gamingalexandria", "Gaming Alexandria", "https://www.gamingalexandria.com/wp/feed/", 2, ["games"], "https://www.gamingalexandria.com"),
+  news("filfre", "The Digital Antiquarian", "https://www.filfre.net/feed/", 2, ["games"], "https://www.filfre.net"),
+  news("ppsspp", "PPSSPP", "https://www.ppsspp.org/news/rss.xml", 1, ["gamedev"], "https://www.ppsspp.org"),
+  news("scummvm", "ScummVM", "https://www.scummvm.org//feeds/atom/", 1, ["gamedev"], "https://www.scummvm.org"),
+  news("melonds", "melonDS", "https://melonds.kuribo64.net/rss.php", 1, ["gamedev"], "https://melonds.kuribo64.net"),
+  news("sega16", "Sega-16", "https://www.sega-16.com/feed/", 1, ["games"], "https://www.sega-16.com"),
+  news("obscuritory", "The Obscuritory", "https://obscuritory.com/feed/", 2, ["games"], "https://obscuritory.com"),
+
+  // Scene-level: fighting games and tool-assisted speedrunning.
+  news("eventhubs", "EventHubs", "https://www.eventhubs.com/news/feed/frontpage/", 2, ["gaming"], "https://www.eventhubs.com"),
+  news("tasvideos", "TASVideos", "https://tasvideos.org/news.rss", 1, ["games"], "https://tasvideos.org"),
+
+  // AI with actual substance — research and practice, not vendor blogging.
+  news("interconnects", "Interconnects", "https://www.interconnects.ai/feed", 2, ["ai"], "https://www.interconnects.ai"),
+  news("importai", "Import AI", "https://importai.substack.com/feed", 2, ["ai"], "https://importai.substack.com"),
+  news("aisafety", "AI Safety Newsletter", "https://newsletter.safe.ai/feed", 1, ["ai"], "https://newsletter.safe.ai"),
 ];
 
 /* -------------------------------------------------------------------- TASTE */

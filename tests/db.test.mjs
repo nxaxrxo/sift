@@ -127,3 +127,37 @@ test("insertItems_dedupesOnTitleKey", async () => {
   assert.equal(page.items.length, 1, "the same story from two outlets is one card");
   db.close();
 });
+
+test("insertItems_sameUrlTwiceInOneBatchDoesNotExplode", async () => {
+  // Two feeds syndicating the same link used to raise UNIQUE constraint failed and
+  // abort the whole ingest: the title gate passed both rows, and the url_key
+  // primary key only noticed when the batch was written.
+  const db = new D1Shim(":memory:");
+  await ensureSchema(db);
+
+  const first = row({ url_key: "https://shared.example/piece", title_key: "title-one", source_id: "a" });
+  const second = row({ url_key: "https://shared.example/piece", title_key: "title-two", source_id: "b" });
+
+  const written = await insertItems(db, [first, second]);
+  assert.equal(written, 1, "one row survives a duplicate url_key inside a single batch");
+
+  const page = await queryFeed(db, { limit: 10 });
+  assert.equal(page.items.length, 1);
+  assert.equal(page.items[0].sourceId, "a", "the first (highest-weight) source keeps the story");
+  db.close();
+});
+
+test("insertItems_duplicateUrlInLaterBatchIsIgnored", async () => {
+  const db = new D1Shim(":memory:");
+  await ensureSchema(db);
+
+  await insertItems(db, [row({ url_key: "https://shared.example/piece", title_key: "title-one" })]);
+  const written = await insertItems(db, [
+    row({ url_key: "https://shared.example/piece", title_key: "title-two", source_id: "b" }),
+  ]);
+
+  assert.equal(written, 0);
+  const page = await queryFeed(db, { limit: 10 });
+  assert.equal(page.items.length, 1);
+  db.close();
+});

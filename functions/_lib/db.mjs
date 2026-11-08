@@ -139,10 +139,18 @@ const COLUMNS = [
 /**
  * Insert items, ignoring anything we already have.
  *
- * Two dedupe gates ride on the same statement: the primary key (`url_key`) kills
- * the same URL twice, and the `WHERE NOT EXISTS` on `title_key` kills the same
- * story republished by a second outlet. Because sources are processed
- * highest-weight-first, the better outlet is the one that wins.
+ * Three gates, because two was not enough. The primary key (`url_key`) stops the
+ * same URL twice; `WHERE NOT EXISTS` on `title_key` stops the same story
+ * republished by a second outlet; and the `url_key` EXISTS check is what makes a
+ * batch safe.
+ *
+ * That last one is not redundant. SQLite checks a UNIQUE/PK violation for the
+ * whole statement, and inside a single INSERT..SELECT it does not see rows added
+ * earlier in the same batch — so two feeds emitting the same link in one run
+ * walked past the title gate and blew up the entire ingest with UNIQUE constraint
+ * failed. Two of the niche outlets syndicate each other, which is exactly how
+ * this surfaced. Because sources are processed highest-weight-first, the better
+ * outlet still wins.
  */
 function insertStatement(db, item) {
   const values = COLUMNS.map((column) => item[column]);
@@ -151,9 +159,9 @@ function insertStatement(db, item) {
     .prepare(
       `INSERT INTO items (${COLUMNS.join(", ")})
        SELECT ${placeholders}
-       WHERE NOT EXISTS (SELECT 1 FROM items WHERE title_key = ?)`,
+       WHERE NOT EXISTS (SELECT 1 FROM items WHERE title_key = ? OR url_key = ?)`,
     )
-    .bind(...values, item.title_key);
+    .bind(...values, item.title_key, item.url_key);
 }
 
 /** Write in chunks: D1 rejects very large batches, and 40 is comfortably inside. */
