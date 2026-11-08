@@ -63,9 +63,51 @@ differently.
 
 ---
 
+## The refresh right now: a local task, not the workflow
+
+The GitHub workflow is parked at `docs/sync.yml.disabled`. GitHub refuses any push that
+creates or edits `.github/workflows/*` unless the token carries the `workflow` scope, and
+this machine's token has only `gist`, `read:org` and `repo`. The file itself is unchanged and
+correct — only its location moved.
+
+Until the scope exists, the board refreshes from a Windows scheduled task instead:
+
+```powershell
+Get-ScheduledTaskInfo -TaskName "SiftRefresh"    # last run + result
+Start-ScheduledTask    -TaskName "SiftRefresh"   # run it now
+Unregister-ScheduledTask -TaskName "SiftRefresh" -Confirm:$false
+```
+
+It runs `scripts/refresh-local.ps1` every 30 minutes, hidden, via the same `scripts/publish.mjs`
+the workflow calls — so it seeds from the live board, ingests all 140 feeds, rebuilds and pushes
+`gh-pages`, exactly as CI would. A lock file stops two runs overlapping, since a publish takes
+about three minutes. Log and exit code land in `.dev/refresh.log` and `.dev/refresh.done`.
+
+**Restoring the workflow** once the token carries `workflow`:
+
+```powershell
+gh auth refresh -h github.com -s workflow     # device flow, needs him
+cd C:\Users\MarciNaro\Documents\VSCODE-PROJECTS\sift
+git mv docs/sync.yml.disabled .github/workflows/sync.yml
+git commit -m "Restore the scheduled sync workflow" 
+git push origin main
+gh workflow run sync.yml
+Unregister-ScheduledTask -TaskName "SiftRefresh" -Confirm:$false   # only then
+```
+
+Two refreshers writing the same branch fight over the gh-pages worktree — drop the local task
+when the workflow comes back, not before.
+
+---
+
 ## If it stops updating
 
-Check the Actions tab: <https://github.com/nxaxrxo/sift/actions>
+First: `(Get-ScheduledTaskInfo -TaskName "SiftRefresh").LastTaskResult` — `0` means the last
+publish succeeded, `267009` means one is running now. Anything else is a real failure; read
+`.dev/refresh.log`.
+
+With the workflow live again, check the Actions tab:
+<https://github.com/nxaxrxo/sift/actions>
 
 - **A feed is failing** — normal, one or two a run. The ingest retries, counts them, and
   never fails the build over a single dead feed.

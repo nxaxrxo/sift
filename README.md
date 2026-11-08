@@ -28,9 +28,16 @@ It is not a replacement for the Beacon's writing. It replaces the *checking*.
 ## How it works
 
 ```
-82 feeds → parse → score → dedupe → SQLite → build → board.json → the page
- (every 60s)            rules            url + title key          cursor paged
+140 feeds → parse → score → dedupe → SQLite → build → board.json → the page
+ (per run)             taste            url + title key          cursor paged
 ```
+
+The sources are deliberately not the ones every aggregator carries. Alongside the big
+outlets sit indie-only press and criticism, Japanese desks (4Gamer, Game*Spark,
+Denfaminicogamer), French, Polish, Chinese, Italian and Spanish press, engine blogs
+(Bevy, Defold, GameMaker), game preservation and emulation projects (Hidden Palace,
+ScummVM, melonDS), the fighting-game scene and AI research rather than vendor blogging.
+Every URL was fetched and confirmed live before it was added.
 
 1. **Fetch.** Every source in parallel, 12s timeout each. A dead feed is counted and skipped; the run
    always finishes.
@@ -65,15 +72,30 @@ node scripts/preview.mjs stop
 `scripts/live-ingest.mjs` is the honest test: same parser, same scorer, same SQL as production, against
 the live internet. It exits non-zero if it stores nothing.
 
+## Asking it for news
+
+```
+node scripts/brief.mjs --top 15
+node scripts/brief.mjs --lane anime --hours 24
+node scripts/brief.mjs --q "silksong"
+```
+
+Reads the published board and prints a ranked brief — one command, no research pass. Flags:
+`--lane`, `--q`, `--hours`, `--source`, `--top`, `--json`, `--local`.
+
 ## Deploy
 
-It publishes itself. `.github/workflows/sync.yml` runs every 15 minutes and does the whole
-job: read the feeds, rebuild the site, push it to the `gh-pages` branch that Pages serves.
-
-There is no server, no database account, and no secret. GitHub's own token does the pushing,
-scoped by `permissions: contents: write` in the workflow file.
-
 **Live at https://nxaxrxo.github.io/sift/**
+
+It publishes itself. `scripts/publish.mjs` does the whole job: seed the database from the
+live board, read all 140 feeds, rebuild the site, force-push an orphan `gh-pages` branch that
+Pages serves. There is no server, no database account, and no secret.
+
+The scheduled GitHub workflow is currently **parked at `docs/sync.yml.disabled`** — GitHub
+refuses a push that touches `.github/workflows/*` unless the token carries the `workflow`
+scope, which this machine's token does not. Until that is authorised, a Windows scheduled
+task named `SiftRefresh` runs the identical pipeline every 30 minutes. `DEPLOY.md` has the
+one-command restore.
 
 Two things worth knowing:
 
