@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sift — the noise, sifted</title>
+<meta name="description" content="A live moodboard of gaming, anime, gamedev and AI news, filtered to one person's taste. No algorithm, no AI, no account.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0c0b0a">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin>
+<script src="assets/theme.js"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<a class="skip" href="#board">Skip to the board</a>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <a class="mark" href="./" aria-label="Sift, home">
+      <span class="mark__word">Sift</span>
+      <span class="mark__rule" aria-hidden="true"></span>
+    </a>
+
+    <div class="masthead__side">
+      <p class="live" id="live" role="status" aria-live="polite">
+        <span class="live__dot" aria-hidden="true"></span>
+        <span class="live__text" id="live-text">warming up</span>
+      </p>
+      <button class="iconbtn" id="theme" type="button" aria-label="Change theme" title="Theme">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="12" cy="12" r="4.2"></circle>
+          <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <p class="tagline">Everything worth clicking, none of the noise.</p>
+</header>
+
+<div class="rail">
+  <div class="rail__inner">
+    <nav class="pills" id="pills" aria-label="Filter by lane">
+      <button class="pill is-on" type="button" data-lane="">All</button>
+    </nav>
+
+    <form class="search" id="search" role="search">
+      <label class="sr" for="q">Search headlines</label>
+      <input id="q" name="q" type="search" placeholder="Search" autocomplete="off" spellcheck="false">
+      <kbd class="search__hint" aria-hidden="true">/</kbd>
+    </form>
+  </div>
+</div>
+
+<main id="board">
+  <div class="board" id="cards" aria-busy="true"></div>
+
+  <div class="board__status" id="status" role="status" aria-live="polite"></div>
+
+  <div class="sentinel" id="sentinel" aria-hidden="true"></div>
+
+  <section class="empty" id="empty" hidden>
+    <h2 class="empty__title" id="empty-title">Nothing here yet.</h2>
+    <p class="empty__body" id="empty-body">The board is still filling up. Give it a minute, or clear the filter.</p>
+    <button class="btn" id="empty-action" type="button">Clear filters</button>
+  </section>
+
+  <footer class="colophon">
+    <p class="colophon__line">
+      <strong>Sift</strong> reads nothing but publisher feeds.
+      <span class="colophon__muted">No AI, no tracking, no account. Links go straight to the source.</span>
+    </p>
+    <p class="colophon__line colophon__muted" id="footer-stats"></p>
+  </footer>
+</main>
+
+<div class="newbar" id="newbar" hidden>
+  <button class="newbar__btn" id="newbar-btn" type="button">
+    <span id="newbar-count">0</span> new
+  </button>
+</div>
+
+<noscript>
+  <div class="noscript">
+    <p><strong>Sift needs JavaScript.</strong> It is one page that asks a database for the next thirty cards — no trackers, no third parties, nothing else.</p>
+  </div>
+</noscript>
+
+<script type="module" src="assets/app.js"></script>
+</body>
+</html>

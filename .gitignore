@@ -1,0 +1,35 @@
+# Local dev state — never part of the site
+.dev/
+.wrangler/
+node_modules/
+
+# Local databases
+*.db
+*.db-wal
+*.db-shm
+
+# Scratch scripts and logs from this machine
+.ingest.log
+.ingest.done
+.font.done
+.diag*.mjs
+.enc.mjs
+.fix.ps1
+.mixchk*.mjs
+.sc.mjs
+.dump.py
+.dump*.txt
+dump.py
+.run-*.ps1
+.*.log
+.*.err
+.anime-list.txt
+probe.html
+cdp-profile/
+
+# Fonts fetched by script are committed (public/assets/fraunces-latin.woff2)
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store

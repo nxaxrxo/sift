@@ -1,0 +1,673 @@
+/* ============================================================================
+   SIFT — style.css
+
+   A darkroom, not a dashboard. Near-black warm paper, photographs floating on it,
+   one 3px colour mark per card and nothing else. Every value below is a token
+   from docs/DESIGN.md; changing the look means changing that file first.
+
+   1 tokens      2 reset       3 type      4 masthead    5 rail
+   6 board       7 card        8 states    9 colophon   10 motion
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 1. TOKENS */
+
+:root {
+  --board: #0c0b0a;
+  --board-2: #131211;
+  --card: #191817;
+  --ink: #f2ece2;
+  --ink-2: #a9a29a;
+  --ink-3: #6f6a64;
+  --rule: #262421;
+  --rule-2: #3a3733;
+
+  --lane-games: #f2613f;
+  --lane-gaming: #e8a33d;
+  --lane-indie: #c3e88d;
+  --lane-anime: #e879b9;
+  --lane-gamedev: #6fc3ba;
+  --lane-ai: #82b6e8;
+  --lane-tech: #b39ddb;
+  --lane-business: #dcc36e;
+  --lane-creator: #de9670;
+
+  --t-masthead: clamp(2rem, 1.4rem + 3vw, 4.5rem);
+  --t-card-title: clamp(1.02rem, 0.97rem + 0.24vw, 1.16rem);
+  --t-body: 0.95rem;
+  --t-meta: 0.72rem;
+
+  --gutter: clamp(12px, 2.4vw, 40px);
+  --shell: 1560px;
+  --col-gap: 14px;
+
+  --serif: "Fraunces", Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+
+  --masthead-h: 72px;
+  --rail-h: 52px;
+}
+
+html[data-theme="light"] {
+  --board: #f7f4ee;
+  --board-2: #efeae2;
+  --card: #fffdf9;
+  --ink: #17150f;
+  --ink-2: #55504a;
+  --ink-3: #847e75;
+  --rule: #e0d9cf;
+  --rule-2: #c6bdaf;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("fraunces-latin.woff2") format("woff2");
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+  font-optical-sizing: auto;
+}
+
+/* ----------------------------------------------------------------- 2. RESET */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--board);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { display: block; max-width: 100%; }
+button, input { font: inherit; color: inherit; }
+
+::selection { background: var(--ink); color: var(--board); }
+
+.sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--board);
+}
+.skip:focus { left: 8px; top: 8px; }
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ 3. TYPE */
+
+h1, h2, h3 { margin: 0; font-weight: 700; }
+
+.mono {
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* -------------------------------------------------------------- 4. MASTHEAD */
+
+.masthead {
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: var(--masthead-h);
+  border-bottom: 1px solid var(--rule);
+}
+
+.mark {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.mark__word {
+  font-family: var(--serif);
+  font-size: var(--t-masthead);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 0, "WONK" 1;
+}
+
+.mark__rule {
+  display: block;
+  width: 26px;
+  height: 3px;
+  background: var(--lane-games);
+  transform: translateY(-0.55em);
+}
+
+.masthead__side {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.live__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lane-indie);
+  box-shadow: 0 0 0 0 currentColor;
+}
+.live.is-stale .live__dot { background: var(--lane-business); }
+.live.is-dead .live__dot { background: var(--lane-games); }
+
+.iconbtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: border-color 120ms, color 120ms;
+}
+.iconbtn:hover { border-color: var(--rule-2); color: var(--ink); }
+
+.tagline {
+  margin: 0;
+  padding: 10px 0 0;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------------------ 5. RAIL */
+
+.rail {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--board) 96%, transparent);
+  border-bottom: 1px solid var(--rule);
+  backdrop-filter: none;
+}
+
+.rail__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  min-height: var(--rail-h);
+}
+
+.pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 8px 0;
+}
+.pills::-webkit-scrollbar { display: none; }
+
+.pill {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 120ms, border-color 120ms, background-color 120ms;
+}
+.pill:hover { color: var(--ink); border-color: var(--rule-2); }
+
+.pill.is-on {
+  color: var(--board);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.pill.is-on[data-lane="games"]    { background: var(--lane-games); border-color: var(--lane-games); }
+.pill.is-on[data-lane="gaming"]   { background: var(--lane-gaming); border-color: var(--lane-gaming); }
+.pill.is-on[data-lane="indie"]    { background: var(--lane-indie); border-color: var(--lane-indie); }
+.pill.is-on[data-lane="anime"]    { background: var(--lane-anime); border-color: var(--lane-anime); }
+.pill.is-on[data-lane="gamedev"]  { background: var(--lane-gamedev); border-color: var(--lane-gamedev); }
+.pill.is-on[data-lane="ai"]       { background: var(--lane-ai); border-color: var(--lane-ai); }
+.pill.is-on[data-lane="tech"]     { background: var(--lane-tech); border-color: var(--lane-tech); }
+.pill.is-on[data-lane="business"] { background: var(--lane-business); border-color: var(--lane-business); }
+.pill.is-on[data-lane="creator"]  { background: var(--lane-creator); border-color: var(--lane-creator); }
+
+.search {
+  position: relative;
+  flex: 0 1 190px;
+  display: flex;
+  align-items: center;
+}
+
+.search input {
+  width: 100%;
+  padding: 5px 26px 5px 2px;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  transition: border-color 120ms;
+}
+.search input::placeholder { color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+.search input:focus { outline: none; border-color: var(--ink); }
+.search input::-webkit-search-cancel-button { filter: invert(0.6); }
+
+.search__hint {
+  position: absolute;
+  right: 2px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--ink-3);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0 4px;
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------- 6. BOARD */
+
+main {
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 18px var(--gutter) 0;
+}
+
+.board {
+  columns: 300px;
+  column-gap: var(--col-gap);
+}
+
+/* ------------------------------------------------------------------ 7. CARD */
+
+.card {
+  position: relative;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin: 0 0 var(--col-gap);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--card);
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+  transition: border-color 120ms;
+}
+.card:hover,
+.card:focus-visible { border-color: var(--rule-2); }
+
+.card__mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--lane-gaming);
+  z-index: 2;
+}
+.card[data-lane="games"]    .card__mark { background: var(--lane-games); }
+.card[data-lane="gaming"]   .card__mark { background: var(--lane-gaming); }
+.card[data-lane="indie"]    .card__mark { background: var(--lane-indie); }
+.card[data-lane="anime"]    .card__mark { background: var(--lane-anime); }
+.card[data-lane="gamedev"]  .card__mark { background: var(--lane-gamedev); }
+.card[data-lane="ai"]       .card__mark { background: var(--lane-ai); }
+.card[data-lane="tech"]     .card__mark { background: var(--lane-tech); }
+.card[data-lane="business"] .card__mark { background: var(--lane-business); }
+.card[data-lane="creator"]  .card__mark { background: var(--lane-creator); }
+
+.card__media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--board-2);
+  border-bottom: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+.card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 220ms ease-out;
+}
+.card__img.is-loaded { opacity: 1; }
+
+/* A card with no image is a type card: no empty media block, room for the words
+   instead. These are the text-only outlets (ANN, Digital Foundry, r/Games) and
+   they should look deliberate, not broken. */
+.card--type .card__body {
+  padding: 16px 15px 15px 17px;
+}
+.card--type .card__title {
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  font-size: calc(var(--t-card-title) * 1.06);
+}
+.card--type .card__sum {
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+
+.card__kind {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: color-mix(in srgb, var(--board) 72%, transparent);
+  color: var(--ink);
+  border-radius: 2px;
+}
+
+.card__body {
+  padding: 11px 13px 13px 15px;
+}
+
+.card__meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 5px;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.card__source {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+.card__dot { opacity: 0.5; }
+.card__when { flex: 0 0 auto; }
+
+.card__title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-card-title);
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.008em;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-wrap: balance;
+}
+.card:hover .card__title { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+.card__sum {
+  margin: 6px 0 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card__hide {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--board) 70%, transparent);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.card:hover .card__hide,
+.card__hide:focus-visible { opacity: 1; }
+@media (hover: none) { .card__hide { opacity: 0.9; } }
+
+/* ---------------------------------------------------------------- 8. STATES */
+
+.skeleton {
+  break-inside: avoid;
+  margin: 0 0 var(--col-gap);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--card);
+  overflow: hidden;
+}
+.skeleton__media {
+  aspect-ratio: 16 / 9;
+  background: var(--board-2);
+}
+.skeleton__body { padding: 12px 14px 16px; }
+.skeleton__line {
+  height: 9px;
+  margin-bottom: 7px;
+  background: var(--board-2);
+  border-radius: 1px;
+}
+.skeleton__line--meta { width: 41%; height: 7px; }
+.skeleton__line--title { width: 92%; height: 12px; }
+.skeleton__line--title2 { width: 68%; height: 12px; }
+.skeleton__line--sum { width: 84%; }
+
+.is-loading .skeleton { animation: pulse 1.6s ease-in-out infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.board__status {
+  padding: 26px 0 40px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  min-height: 24px;
+}
+.board__status:empty { padding: 0; min-height: 0; }
+
+.sentinel { height: 1px; }
+
+.empty {
+  max-width: 460px;
+  margin: 40px auto 0;
+  padding: 0 4px;
+  text-align: center;
+}
+.empty__title {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.empty__body {
+  margin: 8px 0 18px;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: 1px solid var(--rule-2);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 120ms, color 120ms;
+}
+.btn:hover { background: var(--ink); color: var(--board); border-color: var(--ink); }
+
+.newbar {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+.newbar__btn {
+  padding: 9px 18px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--board);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.noscript {
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 18px 20px;
+  border: 1px solid var(--rule);
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+/* -------------------------------------------------------------- 9. COLOPHON */
+
+.colophon {
+  margin: 0 0 60px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  font-size: 0.82rem;
+  color: var(--ink-2);
+}
+.colophon__line { margin: 0 0 6px; }
+.colophon__muted { color: var(--ink-3); }
+
+/* ---------------------------------------------------------------- 10. MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------ 11. BREAKPOINTS */
+
+@media (max-width: 780px) {
+  :root { --masthead-h: 58px; --rail-h: 46px; }
+  .mark__rule { display: none; }
+  .tagline { display: none; }
+  .board { columns: 220px; column-gap: 10px; }
+  .card { margin-bottom: 10px; }
+  .rail__inner { gap: 10px; }
+  .search { flex-basis: 120px; }
+  .search__hint { display: none; }
+}
+
+@media (max-width: 560px) {
+  /* Two rows: the lanes get the full width and scroll cleanly, the search field
+     sits under them. Sharing one row cut a lane label in half ("AN SE"), which
+     reads as a broken page rather than a scrollable rail. */
+  .rail__inner {
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0;
+    padding-bottom: 8px;
+  }
+  .pills { flex: 1 0 100%; order: 1; }
+  .search { flex: 1 0 100%; order: 2; }
+  .search input { height: 32px; }
+}
+
+@media (max-width: 460px) {
+  .board { columns: 1; }
+  .card__title { -webkit-line-clamp: 4; line-clamp: 4; }
+  .live__text { display: none; }
+}
+
+@media print {
+  .rail, .newbar, .iconbtn, .card__hide, .sentinel { display: none; }
+  body { background: #fff; color: #000; }
+  .board { columns: 300px; }
+  .card { break-inside: avoid; }
+}

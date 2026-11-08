@@ -1,0 +1,20 @@
+{
+  "name": "sift",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A live moodboard of gaming, anime, gamedev and AI news, filtered to one person's taste. No AI at runtime.",
+  "scripts": {
+    "test": "node --test tests/clean.test.mjs tests/parse.test.mjs tests/score.test.mjs tests/db.test.mjs",
+    "ingest": "node scripts/live-ingest.mjs",
+    "dev": "node scripts/preview.mjs start",
+    "stop": "node scripts/preview.mjs stop",
+    "shot": "node scripts/preview.mjs shot",
+    "anime": "python scripts/build-anime-data.py"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,1814 @@
+{
+ "note": "The owner's MyAnimeList titles, all rated 9-10/10. Sift matches these (and their english aliases) against headlines to fire the anime boost. An entry with \"dropped\": true was rated highly but abandoned - still his taste, just not a guaranteed win.",
+ "source": "daily-beacon/config/anime.json + hand-written english aliases",
+ "count": 100,
+ "titles": [
+  {
+   "title": "Golden Boy",
+   "aliases": [
+    "Golden Boy"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "ova",
+   "genres": [
+    "Adult Cast",
+    "Adventure",
+    "Comedy",
+    "Ecchi",
+    "Gag Humor",
+    "Seinen",
+    "Workplace"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Hellsing Ultimate",
+   "aliases": [
+    "Hellsing Ultimate",
+    "Hellsing"
+   ],
+   "score": 10,
+   "status": "plan_to_watch",
+   "type": "ova",
+   "genres": [
+    "Action",
+    "Adult Cast",
+    "Gore",
+    "Horror",
+    "Military",
+    "Seinen",
+    "Supernatural",
+    "Vampire"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Death Note",
+   "aliases": [
+    "Death Note"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Psychological",
+    "Shounen",
+    "Supernatural",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shingeki no Kyojin",
+   "aliases": [
+    "Shingeki no Kyojin",
+    "Attack on Titan",
+    "Shingeki"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Award Winning",
+    "Drama",
+    "Gore",
+    "Military",
+    "Shounen",
+    "Survival",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Outbreak Company",
+   "aliases": [
+    "Outbreak Company"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Fantasy",
+    "Harem",
+    "Isekai",
+    "Otaku Culture",
+    "Parody"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Tokyo Ghoul",
+   "aliases": [
+    "Tokyo Ghoul"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Fantasy",
+    "Gore",
+    "Horror",
+    "Psychological",
+    "Seinen",
+    "Suspense",
+    "Urban Fantasy"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Kiseijuu: Sei no Kakuritsu",
+   "aliases": [
+    "Kiseijuu: Sei no Kakuritsu",
+    "Parasyte"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Gore",
+    "Horror",
+    "Psychological",
+    "Sci-Fi",
+    "Seinen",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Overlord",
+   "aliases": [
+    "Overlord",
+    "Overlord anime"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Fantasy",
+    "Isekai"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "One Punch Man",
+   "aliases": [
+    "One Punch Man",
+    "One-Punch Man",
+    "OnePunch Man"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adult Cast",
+    "Comedy",
+    "Parody",
+    "Seinen",
+    "Super Power"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Kono Subarashii Sekai ni Shukufuku wo!",
+   "aliases": [
+    "Kono Subarashii Sekai ni Shukufuku wo!",
+    "KonoSuba",
+    "Konosuba"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adventure",
+    "Comedy",
+    "Fantasy",
+    "Isekai",
+    "Parody"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Boku no Hero Academia",
+   "aliases": [
+    "Boku no Hero Academia",
+    "My Hero Academia",
+    "Hero Academia",
+    "BnHA"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "School",
+    "Shounen",
+    "Super Power"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Sakamoto desu ga?",
+   "aliases": [
+    "Sakamoto desu ga?",
+    "Sakamoto Days is not this",
+    "Haven't You Heard I'm Sakamoto"
+   ],
+   "score": 10,
+   "status": "dropped",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Gag Humor",
+    "School",
+    "Seinen"
+   ],
+   "dropped": true
+  },
+  {
+   "title": "91 Days",
+   "aliases": [
+    "91 Days"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adult Cast",
+    "Drama",
+    "Historical",
+    "Organized Crime",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Saiki Kusuo no Ψ-nan",
+   "aliases": [
+    "Saiki Kusuo no Ψ-nan",
+    "Saiki K",
+    "Disastrous Life of Saiki K"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Gag Humor",
+    "School",
+    "Shounen",
+    "Super Power"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Boku no Hero Academia 2nd Season",
+   "aliases": [
+    "Boku no Hero Academia 2nd Season",
+    "My Hero Academia season 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "School",
+    "Shounen",
+    "Super Power"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Inuyashiki",
+   "aliases": [
+    "Inuyashiki",
+    "Inuyashiki Last Hero"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Drama",
+    "Gore",
+    "Psychological",
+    "Sci-Fi",
+    "Seinen",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Aho Girl",
+   "aliases": [
+    "Aho Girl",
+    "Aho-Girl"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Gag Humor",
+    "School",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e",
+   "aliases": [
+    "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e",
+    "Classroom of the Elite"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Drama",
+    "Psychological",
+    "School",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Boku no Hero Academia 3rd Season",
+   "aliases": [
+    "Boku no Hero Academia 3rd Season",
+    "My Hero Academia season 3"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "School",
+    "Shounen",
+    "Super Power"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Goblin Slayer",
+   "aliases": [
+    "Goblin Slayer"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Fantasy",
+    "Gore"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Tensei shitara Slime Datta Ken",
+   "aliases": [
+    "Tensei shitara Slime Datta Ken",
+    "That Time I Got Reincarnated as a Slime",
+    "Slime Isekai",
+    "TenSura"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Comedy",
+    "Fantasy",
+    "Isekai",
+    "Reincarnation",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Dororo",
+   "aliases": [
+    "Dororo"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Fantasy",
+    "Historical",
+    "Mythology",
+    "Samurai",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Vinland Saga",
+   "aliases": [
+    "Vinland Saga"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Drama",
+    "Gore",
+    "Historical",
+    "Seinen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Overlord III",
+   "aliases": [
+    "Overlord III",
+    "Overlord season 3"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Fantasy",
+    "Isekai"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Yakusoku no Neverland",
+   "aliases": [
+    "Yakusoku no Neverland",
+    "The Promised Neverland"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Mystery",
+    "Psychological",
+    "Shounen",
+    "Survival",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Isekai Quartet",
+   "aliases": [
+    "Isekai Quartet"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Fantasy",
+    "Isekai",
+    "Parody"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shingeki no Kyojin Season 3 Part 2",
+   "aliases": [
+    "Shingeki no Kyojin Season 3 Part 2",
+    "Attack on Titan season 3 part 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Drama",
+    "Gore",
+    "Military",
+    "Shounen",
+    "Survival",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shinchou Yuusha: Kono Yuusha ga Ore Tueee Kuse ni Shinchou Sugiru",
+   "aliases": [
+    "Shinchou Yuusha: Kono Yuusha ga Ore Tueee Kuse ni Shinchou Sugiru",
+    "Cautious Hero"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Comedy",
+    "Fantasy",
+    "Isekai",
+    "Parody"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Dr. Stone",
+   "aliases": [
+    "Dr. Stone",
+    "Doctor Stone"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adventure",
+    "Comedy",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Hataage! Kemono Michi",
+   "aliases": [
+    "Hataage! Kemono Michi",
+    "Kemono Michi"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Anthropomorphic",
+    "Comedy",
+    "Fantasy",
+    "Isekai",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Mairimashita! Iruma-kun",
+   "aliases": [
+    "Mairimashita! Iruma-kun",
+    "Welcome to Demon School Iruma-kun",
+    "Iruma-kun"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Fantasy",
+    "School",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Gleipnir",
+   "aliases": [
+    "Gleipnir"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Ecchi",
+    "Mystery",
+    "Seinen",
+    "Super Power"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Mushoku Tensei: Isekai Ittara Honki Dasu",
+   "aliases": [
+    "Mushoku Tensei: Isekai Ittara Honki Dasu",
+    "Mushoku Tensei",
+    "Jobless Reincarnation"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adventure",
+    "Drama",
+    "Ecchi",
+    "Fantasy",
+    "Isekai",
+    "Reincarnation"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Tensei shitara Slime Datta Ken 2nd Season",
+   "aliases": [
+    "Tensei shitara Slime Datta Ken 2nd Season",
+    "Slime season 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Comedy",
+    "Fantasy",
+    "Isekai",
+    "Reincarnation",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Isekai Quartet 2",
+   "aliases": [
+    "Isekai Quartet 2",
+    "Isekai Quartet season 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Fantasy",
+    "Isekai",
+    "Parody"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shingeki no Kyojin: The Final Season",
+   "aliases": [
+    "Shingeki no Kyojin: The Final Season",
+    "Attack on Titan final season"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Drama",
+    "Gore",
+    "Military",
+    "Shounen",
+    "Survival",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Kimetsu no Yaiba Movie: Mugen Ressha-hen",
+   "aliases": [
+    "Kimetsu no Yaiba Movie: Mugen Ressha-hen",
+    "Demon Slayer",
+    "Demon Slayer Mugen Train",
+    "Mugen Train",
+    "Kimetsu no Yaiba"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "movie",
+   "genres": [
+    "Action",
+    "Historical",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Dr. Stone: Stone Wars",
+   "aliases": [
+    "Dr. Stone: Stone Wars",
+    "Dr. Stone season 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adventure",
+    "Comedy",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Chainsaw Man",
+   "aliases": [
+    "Chainsaw Man"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Fantasy",
+    "Gore",
+    "Shounen",
+    "Urban Fantasy"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Koroshi Ai",
+   "aliases": [
+    "Koroshi Ai",
+    "Love of Kill"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adult Cast",
+    "Josei",
+    "Organized Crime",
+    "Romance"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Niehime to Kemono no Ou",
+   "aliases": [
+    "Niehime to Kemono no Ou",
+    "Sacrificial Princess and the King of Beasts"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Anthropomorphic",
+    "Fantasy",
+    "Romance",
+    "Shoujo"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Jigokuraku",
+   "aliases": [
+    "Jigokuraku",
+    "Hell's Paradise",
+    "Hells Paradise"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Gore",
+    "Historical",
+    "Samurai",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Kimetsu no Yaiba: Yuukaku-hen",
+   "aliases": [
+    "Kimetsu no Yaiba: Yuukaku-hen",
+    "Demon Slayer Entertainment District"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Historical",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shingeki no Kyojin: The Final Season Part 2",
+   "aliases": [
+    "Shingeki no Kyojin: The Final Season Part 2",
+    "Attack on Titan final season part 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Drama",
+    "Gore",
+    "Military",
+    "Shounen",
+    "Survival",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Blue Lock",
+   "aliases": [
+    "Blue Lock"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Shounen",
+    "Sports",
+    "Team Sports"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Migi to Dali",
+   "aliases": [
+    "Migi to Dali",
+    "Migi and Dali"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Mystery",
+    "Seinen",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Jujutsu Kaisen 2nd Season",
+   "aliases": [
+    "Jujutsu Kaisen 2nd Season",
+    "Jujutsu Kaisen season 2",
+    "JJK season 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Gore",
+    "School",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Mashle",
+   "aliases": [
+    "Mashle",
+    "Mashle Magic and Muscles"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Comedy",
+    "Fantasy",
+    "Gag Humor",
+    "Parody",
+    "School",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Ore dake Level Up na Ken",
+   "aliases": [
+    "Ore dake Level Up na Ken",
+    "Solo Leveling"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adult Cast",
+    "Adventure",
+    "Fantasy",
+    "Urban Fantasy"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Oemojisangjuui",
+   "aliases": [
+    "Oemojisangjuui",
+    "Lookism"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "ona",
+   "genres": [
+    "Action",
+    "Drama",
+    "School",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo",
+   "aliases": [
+    "Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo",
+    "100 Girlfriends"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Harem",
+    "Parody",
+    "Romance",
+    "School",
+    "Seinen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Kikansha no Mahou wa Tokubetsu desu",
+   "aliases": [
+    "Kikansha no Mahou wa Tokubetsu desu",
+    "A Returner's Magic Should Be Special"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Fantasy",
+    "School",
+    "Time Travel"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Mashle: Shinkakusha Kouho Senbatsu Shiken-hen",
+   "aliases": [
+    "Mashle: Shinkakusha Kouho Senbatsu Shiken-hen",
+    "Mashle season 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Comedy",
+    "Fantasy",
+    "Gag Humor",
+    "Parody",
+    "School",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Dandadan",
+   "aliases": [
+    "Dandadan",
+    "Dan Da Dan"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Comedy",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Ore dake Level Up na Ken Season 2: Arise from the Shadow",
+   "aliases": [
+    "Ore dake Level Up na Ken Season 2: Arise from the Shadow",
+    "Solo Leveling season 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adult Cast",
+    "Adventure",
+    "Fantasy",
+    "Urban Fantasy"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Dandadan 2nd Season",
+   "aliases": [
+    "Dandadan 2nd Season",
+    "Dandadan season 2"
+   ],
+   "score": 10,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Comedy",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Mononoke Hime",
+   "aliases": [
+    "Mononoke Hime",
+    "Princess Mononoke"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "movie",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Award Winning",
+    "Fantasy"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Devil May Cry",
+   "aliases": [
+    "Devil May Cry",
+    "Devil May Cry anime"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Fantasy",
+    "Gore",
+    "Mythology"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Darker than Black: Kuro no Keiyakusha",
+   "aliases": [
+    "Darker than Black: Kuro no Keiyakusha",
+    "Darker than Black"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Mystery",
+    "Super Power"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Ookami to Koushinryou",
+   "aliases": [
+    "Ookami to Koushinryou",
+    "Spice and Wolf"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adult Cast",
+    "Adventure",
+    "Drama",
+    "Romance",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Fullmetal Alchemist: Brotherhood",
+   "aliases": [
+    "Fullmetal Alchemist: Brotherhood",
+    "Fullmetal Alchemist Brotherhood",
+    "FMAB",
+    "FMA Brotherhood"
+   ],
+   "score": 9,
+   "status": "dropped",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Drama",
+    "Fantasy",
+    "Military",
+    "Shounen"
+   ],
+   "dropped": true
+  },
+  {
+   "title": "Kaichou wa Maid-sama!",
+   "aliases": [
+    "Kaichou wa Maid-sama!",
+    "Maid Sama"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Romance",
+    "School",
+    "Shoujo"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Steins;Gate",
+   "aliases": [
+    "Steins;Gate",
+    "Steins Gate"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Drama",
+    "Psychological",
+    "Sci-Fi",
+    "Suspense",
+    "Time Travel"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Ao no Exorcist",
+   "aliases": [
+    "Ao no Exorcist",
+    "Blue Exorcist"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Mythology",
+    "School",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Mirai Nikki (TV)",
+   "aliases": [
+    "Mirai Nikki (TV)",
+    "Future Diary",
+    "Mirai Nikki"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Gore",
+    "High Stakes Game",
+    "Psychological",
+    "Shounen",
+    "Supernatural",
+    "Survival",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Ookami Kodomo no Ame to Yuki",
+   "aliases": [
+    "Ookami Kodomo no Ame to Yuki",
+    "Wolf Children"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "movie",
+   "genres": [
+    "Award Winning",
+    "Childcare",
+    "Slice of Life",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Nazo no Kanojo X",
+   "aliases": [
+    "Nazo no Kanojo X",
+    "Mysterious Girlfriend X"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Romance",
+    "School",
+    "Seinen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Tonari no Kaibutsu-kun",
+   "aliases": [
+    "Tonari no Kaibutsu-kun",
+    "My Little Monster"
+   ],
+   "score": 9,
+   "status": "dropped",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Romance",
+    "School",
+    "Shoujo"
+   ],
+   "dropped": true
+  },
+  {
+   "title": "Hataraku Maou-sama!",
+   "aliases": [
+    "Hataraku Maou-sama!",
+    "The Devil is a Part-Timer",
+    "Devil is a Part Timer"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "No Game No Life",
+   "aliases": [
+    "No Game No Life",
+    "No Game, No Life"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Ecchi",
+    "Fantasy",
+    "Isekai",
+    "Strategy Game"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Noragami",
+   "aliases": [
+    "Noragami"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Mythology",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Witch Craft Works",
+   "aliases": [
+    "Witch Craft Works"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "School",
+    "Seinen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Barakamon",
+   "aliases": [
+    "Barakamon"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Childcare",
+    "Iyashikei",
+    "Slice of Life",
+    "Visual Arts"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Zankyou no Terror",
+   "aliases": [
+    "Zankyou no Terror",
+    "Terror in Resonance"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Detective",
+    "Mystery",
+    "Psychological",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shingeki no Kyojin Season 2",
+   "aliases": [
+    "Shingeki no Kyojin Season 2",
+    "Attack on Titan season 2"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Drama",
+    "Gore",
+    "Military",
+    "Shounen",
+    "Survival",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Tokyo Ghoul √A",
+   "aliases": [
+    "Tokyo Ghoul √A",
+    "Tokyo Ghoul Root A"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Fantasy",
+    "Gore",
+    "Horror",
+    "Psychological",
+    "Seinen",
+    "Suspense",
+    "Urban Fantasy"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shokugeki no Souma",
+   "aliases": [
+    "Shokugeki no Souma",
+    "Food Wars"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Ecchi",
+    "Gourmet",
+    "School",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Death Parade",
+   "aliases": [
+    "Death Parade"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adult Cast",
+    "Drama",
+    "Fantasy",
+    "High Stakes Game",
+    "Psychological",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Rokka no Yuusha",
+   "aliases": [
+    "Rokka no Yuusha",
+    "Rokka Braves of the Six Flowers"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Fantasy",
+    "Mystery"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Yamada-kun to 7-nin no Majo",
+   "aliases": [
+    "Yamada-kun to 7-nin no Majo",
+    "Yamada-kun and the Seven Witches"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Harem",
+    "Mystery",
+    "Romance",
+    "School",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Himouto! Umaru-chan",
+   "aliases": [
+    "Himouto! Umaru-chan",
+    "Umaru-chan"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Otaku Culture",
+    "School",
+    "Seinen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Noragami Aragoto",
+   "aliases": [
+    "Noragami Aragoto",
+    "Noragami season 2"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Mythology",
+    "Shounen",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shingeki no Bahamut: Virgin Soul",
+   "aliases": [
+    "Shingeki no Bahamut: Virgin Soul",
+    "Rage of Bahamut Virgin Soul"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Fantasy"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Boku dake ga Inai Machi",
+   "aliases": [
+    "Boku dake ga Inai Machi",
+    "Erased anime"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Mystery",
+    "Psychological",
+    "Seinen",
+    "Suspense",
+    "Time Travel"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Mob Psycho 100",
+   "aliases": [
+    "Mob Psycho 100",
+    "Mob Psycho"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Comedy",
+    "Supernatural"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shokugeki no Souma: Ni no Sara",
+   "aliases": [
+    "Shokugeki no Souma: Ni no Sara",
+    "Food Wars season 2"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Ecchi",
+    "Gourmet",
+    "School",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Kono Subarashii Sekai ni Shukufuku wo! 2",
+   "aliases": [
+    "Kono Subarashii Sekai ni Shukufuku wo! 2",
+    "KonoSuba season 2"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adventure",
+    "Comedy",
+    "Fantasy",
+    "Isekai",
+    "Parody"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Masamune-kun no Revenge",
+   "aliases": [
+    "Masamune-kun no Revenge",
+    "Masamune-kun's Revenge"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Harem",
+    "Romance",
+    "School",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Demi-chan wa Kataritai",
+   "aliases": [
+    "Demi-chan wa Kataritai",
+    "Interviews with Monster Girls"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Comedy",
+    "Fantasy",
+    "Mythology",
+    "School",
+    "Seinen",
+    "Urban Fantasy"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "One Punch Man 2nd Season",
+   "aliases": [
+    "One Punch Man 2nd Season",
+    "One Punch Man season 2"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adult Cast",
+    "Comedy",
+    "Parody",
+    "Seinen",
+    "Super Power"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Made in Abyss",
+   "aliases": [
+    "Made in Abyss"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adventure",
+    "Drama",
+    "Fantasy",
+    "Gore",
+    "Mystery",
+    "Sci-Fi"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Kakegurui",
+   "aliases": [
+    "Kakegurui",
+    "Kakegurui Compulsive Gambler"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Drama",
+    "High Stakes Game",
+    "Mystery",
+    "Psychological",
+    "School",
+    "Shounen",
+    "Strategy Game",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Overlord II",
+   "aliases": [
+    "Overlord II",
+    "Overlord season 2"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Fantasy",
+    "Isekai"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shingeki no Kyojin Season 3",
+   "aliases": [
+    "Shingeki no Kyojin Season 3",
+    "Attack on Titan season 3"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Drama",
+    "Gore",
+    "Military",
+    "Shounen",
+    "Survival",
+    "Suspense"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Shokugeki no Souma: San no Sara",
+   "aliases": [
+    "Shokugeki no Souma: San no Sara",
+    "Food Wars season 3"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Ecchi",
+    "Gourmet",
+    "School",
+    "Shounen"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Tate no Yuusha no Nariagari",
+   "aliases": [
+    "Tate no Yuusha no Nariagari",
+    "The Rising of the Shield Hero",
+    "Shield Hero"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Drama",
+    "Fantasy",
+    "Isekai"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Darling in the FranXX",
+   "aliases": [
+    "Darling in the FranXX",
+    "Darling in the Franxx",
+    "DarliFra"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Drama",
+    "Mecha",
+    "Romance",
+    "Sci-Fi"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Wotaku ni Koi wa Muzukashii",
+   "aliases": [
+    "Wotaku ni Koi wa Muzukashii",
+    "Wotakoi"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Adult Cast",
+    "Comedy",
+    "Otaku Culture",
+    "Romance",
+    "Workplace"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Sword Art Online: Alicization",
+   "aliases": [
+    "Sword Art Online: Alicization",
+    "Sword Art Online Alicization"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "tv",
+   "genres": [
+    "Action",
+    "Adventure",
+    "Fantasy",
+    "Video Game"
+   ],
+   "dropped": false
+  },
+  {
+   "title": "Made in Abyss Movie 3: Fukaki Tamashii no Reimei",
+   "aliases": [
+    "Made in Abyss Movie 3: Fukaki Tamashii no Reimei",
+    "Made in Abyss Dawn of the Deep Soul"
+   ],
+   "score": 9,
+   "status": "completed",
+   "type": "movie",
+   "genres": [
+    "Adventure",
+    "Drama",
+    "Fantasy",
+    "Gore",
+    "Mystery",
+    "Sci-Fi"
+   ],
+   "dropped": false
+  }
+ ]
+}
