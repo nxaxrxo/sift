@@ -3,6 +3,10 @@
 .wrangler/
 node_modules/
 
+# The built site is generated, and gh-pages is published from it — committing it
+# would be a second copy of the board file in main, 900 KB every 15 minutes
+dist/
+
 # Local databases
 *.db
 *.db-wal

@@ -20,9 +20,8 @@
 /* ------------------------------------------------------------------ 1. STATE */
 
 const API = {
-  feed: "/api/feed",
-  sync: "/api/sync",
-  stats: "/api/stats",
+  board: "api/board.json",
+  stats: "api/stats.json",
 };
 
 const PAGE_SIZE = 30;
@@ -36,7 +35,9 @@ const MAX_HIDDEN = 500;
 const state = {
   lanes: [],
   query: "",
-  cursor: null,
+  board: null, // the whole ordered board, fetched once
+  filtered: [], // the board after lane/search filtering
+  offset: 0, // how far into `filtered` the reader has scrolled
   loading: false,
   exhausted: false,
   topBucket: null, // hour of the newest card, for the "N new" pill
@@ -280,29 +281,60 @@ function setStatus(text) {
 
 /* --------------------------------------------------------- 6. FEED + PAGING */
 
-function feedUrl({ cursor = null } = {}) {
-  const url = new URL(API.feed, location.origin);
-  url.searchParams.set("limit", String(PAGE_SIZE));
-  if (cursor) url.searchParams.set("cursor", cursor);
-  if (state.lanes.length) url.searchParams.set("lanes", state.lanes.join(","));
-  if (state.query) url.searchParams.set("q", state.query);
-  return url.toString();
+/**
+ * The board is a static file, so there is exactly one fetch and then paging is
+ * array slicing. `state.board` holds the full ordered array; `state.filtered`
+ * holds the view after lane/search filtering; `state.offset` is how far the
+ * reader has scrolled into it.
+ *
+ * This replaced a live API when the site moved to GitHub Pages. The ordering is
+ * still decided by the same SQL that ran at the edge — it just runs at build time
+ * now — so a card's position is identical to what the API would have returned.
+ */
+function applyFilters(items) {
+  const lanes = state.lanes;
+  const query = state.query.toLowerCase();
+  if (!lanes.length && !query) return items;
+  return items.filter((item) => {
+    if (lanes.length && !lanes.some((lane) => item.lanes.includes(lane))) return false;
+    if (query) {
+      const haystack = `${item.title} ${item.summary || ""}`.toLowerCase();
+      if (!haystack.includes(query)) return false;
+    }
+    return true;
+  });
 }
 
 async function request(url, options) {
   const response = await fetch(url, { headers: { Accept: "application/json" }, ...options });
   if (!response.ok) {
-    const detail = await response.json().catch(() => null);
-    const message = detail?.error?.message || `HTTP ${response.status}`;
-    throw new Error(message);
+    throw new Error(`HTTP ${response.status}`);
   }
   return response.json();
+}
+
+async function loadBoard() {
+  if (state.board) return state.board;
+  const data = await request(API.board);
+  state.board = data.items || [];
+  state.total = data.meta?.total ?? state.board.length;
+  state.oldest = data.meta?.oldest ?? null;
+  state.lastSync = data.meta?.lastSync ?? 0;
+  return state.board;
+}
+
+function pageItems() {
+  return state.filtered.slice(state.offset, state.offset + PAGE_SIZE);
+}
+
+function hasMorePages() {
+  return state.offset < state.filtered.length;
 }
 
 async function loadFirstPage() {
   state.loading = true;
   state.exhausted = false;
-  state.cursor = null;
+  state.offset = 0;
   state.pending = 0;
   hideNewBar();
   clearBoard();
@@ -310,23 +342,24 @@ async function loadFirstPage() {
   renderSkeletons();
 
   try {
-    const data = await request(feedUrl());
+    const board = await loadBoard();
     clearSkeletons();
-    state.total = data.meta?.total ?? 0;
-    state.oldest = data.meta?.oldest ?? null;
-    state.lastSync = data.meta?.lastSync ?? 0;
-    const top = data.items[0];
+
+    state.filtered = applyFilters(board);
+    const top = state.filtered[0];
     state.topBucket = top ? top.bucket : null;
     state.topScore = top ? top.score : 0;
-    state.cursor = data.nextCursor;
 
-    const painted = appendItems(data.items);
+    const items = pageItems();
+    state.offset += items.length;
+
+    const painted = appendItems(items);
     if (!painted) {
-      showEmpty(data.items.length ? "Everything here is hidden." : "", data.items.length ? "hidden" : "none");
+      showEmpty(state.filtered.length ? "Everything here is hidden." : "", state.filtered.length ? "hidden" : "none");
     } else {
       el.empty.hidden = true;
     }
-    if (!data.nextCursor) state.exhausted = true;
+    if (!hasMorePages()) state.exhausted = true;
     updateLive();
     updateStatus();
   } catch (error) {
@@ -344,17 +377,15 @@ async function loadMore() {
   setStatus("Loading…");
 
   try {
-    const data = await request(feedUrl({ cursor: state.cursor }));
-    state.cursor = data.nextCursor;
-    if (!data.nextCursor) state.exhausted = true;
+    const items = pageItems();
+    state.offset += items.length;
+    if (!hasMorePages()) state.exhausted = true;
 
-    const painted = appendItems(data.items);
-    if (!painted && !data.nextCursor) state.exhausted = true;
+    const painted = appendItems(items);
+    if (!painted && !hasMorePages()) state.exhausted = true;
     updateStatus();
   } catch (error) {
     setStatus(`Couldn't load more — ${error.message}. Scroll to retry.`);
-    state.loading = false;
-    return;
   } finally {
     state.loading = false;
   }
@@ -432,21 +463,19 @@ function updateLive() {
   el.liveText.textContent = minutes < 1 ? "live · just now" : `live · ${minutes}m ago`;
 }
 
-async function pingSync() {
-  try {
-    const data = await request(API.sync);
-    if (data?.lastSync) state.lastSync = data.lastSync;
-    updateLive();
-  } catch {
-    el.live.className = "live is-dead";
-  }
+/**
+ * There is no server to poke any more: the board is rebuilt by a scheduled
+ * GitHub Action, so "new material" arrives as a new api/board.json. All this
+ * does now is keep the live pill honest about when that build happened.
+ */
+function pingSync() {
+  updateLive();
 }
 
 /**
  * "New" means: sorts above the current top card in the board's own order. That is
  * a (bucket, score) comparison — a strong story from an earlier block never
- * counts as new just because we only saw it now. The bucket comes from the API so
- * the client never has to re-derive the same rule and drift out of step with it.
+ * counts as new just because we only saw it now.
  */
 function isAboveTop(item) {
   if (!state.topBucket) return true;
@@ -454,22 +483,22 @@ function isAboveTop(item) {
   return item.score > state.topScore;
 }
 
+/**
+ * A static build cannot be polled for arrivals. Instead, refresh the board file
+ * itself: if the build that made it is newer than the one we are showing, offer
+ * the reader the new cards.
+ */
 async function checkForNew() {
   if (state.loading) return;
 
-  const url = new URL(API.feed, location.origin);
-  url.searchParams.set("limit", "20");
-  if (state.lanes.length) url.searchParams.set("lanes", state.lanes.join(","));
-  if (state.query) url.searchParams.set("q", state.query);
-
   try {
-    const data = await request(url.toString());
-    state.lastSync = data.meta?.lastSync ?? state.lastSync;
-    state.total = data.meta?.total ?? state.total;
+    const data = await request(`${API.board}?t=${Date.now()}`);
+    const meta = data.meta || {};
+    const fresh = (data.items || []).filter((item) => isAboveTop(item) && !hidden.has(item.urlKey));
+    state.total = meta.total ?? state.total;
+    if (meta.lastSync) state.lastSync = meta.lastSync;
     updateLive();
 
-    const fresh = (data.items || []).filter((item) => isAboveTop(item) && !hidden.has(item.urlKey));
-    state.pending = fresh.length;
     if (!fresh.length) {
       hideNewBar();
       return;
@@ -486,9 +515,10 @@ function hideNewBar() {
   state.pending = 0;
 }
 
-/** Merge the pending page in without re-sorting: the API order is already right. */
+/** Drop the cached board so the next load picks up the newest build. */
 async function applyNewItems() {
   hideNewBar();
+  state.board = null;
   window.scrollTo({ top: 0, behavior: "auto" });
   await loadFirstPage();
 }

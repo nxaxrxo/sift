@@ -1,0 +1,57 @@
+name: Refresh the board
+
+# Every 15 minutes: read the feeds, rebuild the site, publish it.
+#
+# There is no secret here and no server. The runner rebuilds a database from the
+# previous board (seeded from the live URL), ingests on top of it, rebuilds dist/
+# and force-pushes the gh-pages branch that Pages serves.
+#
+# GitHub's own token does the pushing (`contents: write` below), so this works on
+# a fresh clone with nothing configured.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+# Two runs must never publish at once: the second would seed from a board the
+# first is still rewriting.
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # publish.mjs pushes with plain `git`, so the checkout must be able to
+      # authenticate. Actions' injected token needs to be in the remote URL;
+      # `contents: write` alone does not put it there.
+      - name: Point git at the Actions token
+        run: |
+          git config user.name "Sift"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run the tests
+        run: npm test
+
+      - name: Publish
+        run: node scripts/publish.mjs --db .dev/sift.db

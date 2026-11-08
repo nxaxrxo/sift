@@ -4,8 +4,8 @@ A live moodboard of gaming, anime, gamedev and AI news, filtered to one person's
 No AI in the loop, no account, no tracking, no algorithm that "learns". Feeds in, rules scored,
 cards out. Click a card and you land on the publisher.
 
-**Live:** `https://sift.pages.dev`
-**Cost to run:** £0. Cloudflare Pages free tier + one D1 database.
+**Live:** `https://nxaxrxo.github.io/sift/`
+**Cost to run:** Zero. Static files on GitHub Pages, rebuilt by a scheduled Action.
 
 ---
 
@@ -28,7 +28,7 @@ It is not a replacement for the Beacon's writing. It replaces the *checking*.
 ## How it works
 
 ```
-82 feeds ──► parse ──► score ──► dedupe ──► D1 (SQLite) ──► /api/feed ──► board
+82 feeds → parse → score → dedupe → SQLite → build → board.json → the page
  (every 60s)            rules            url + title key          cursor paged
 ```
 
@@ -42,9 +42,10 @@ It is not a replacement for the Beacon's writing. It replaces the *checking*.
    watches. Penalised (never banned): politics, celebrity, rumours, guides, deals.
 4. **Dedupe.** Two gates: canonical URL as the primary key, and a normalised title key so the same story
    from three outlets becomes one card — the highest-weight outlet wins.
-5. **Serve.** `/api/feed` pages on a `(bucket, score, mix, urlKey)` tuple cursor, so nothing is
-   skipped when ten stories share a score — and a short cursor would silently drop the tail of
-   every tie.
+5. **Serve.** The board is ordered once by `(bucket, score, mix, urlKey)` and written to
+   `api/board.json`; the page slices that array as you scroll. Ordering in one place means
+   no cursor arithmetic and no way for the client to disagree with the database about what
+   comes next.
 
 ## Taste is a file, not a model
 
@@ -56,7 +57,7 @@ raises or buries a story. Edit it, redeploy, the board changes. There is no prom
 ```powershell
 npm test                                  # 44 tests, no dependencies
 node scripts/live-ingest.mjs              # real feeds into .dev/sift.db, prints stats + sample cards
-node scripts/preview.mjs start            # hidden wrangler dev on :8788
+node scripts/preview.mjs start        # serves dist/ on :8788, hidden
 node scripts/preview.mjs shot             # headless screenshots at 1440 / 820 / 390
 node scripts/preview.mjs stop
 ```
@@ -66,29 +67,46 @@ the live internet. It exits non-zero if it stores nothing.
 
 ## Deploy
 
+It publishes itself. `.github/workflows/sync.yml` runs every 15 minutes and does the whole
+job: read the feeds, rebuild the site, push it to the `gh-pages` branch that Pages serves.
+
+There is no server, no database account, and no secret. GitHub's own token does the pushing,
+scoped by `permissions: contents: write` in the workflow file.
+
+**Live at https://nxaxrxo.github.io/sift/**
+
+Two things worth knowing:
+
+- **The archive survives a fresh runner.** A scheduled build starts on an empty disk, so
+  `scripts/seed.mjs` first restores the database from the currently published board (the live
+  URL), then ingests on top of it. Without that step the board would reset to a single ingest
+  every 15 minutes.
+- **`gh-pages` is an artifact, not history.** Each publish is an orphan commit, force-pushed.
+  That keeps the repository small — otherwise every run would add another ~900 KB board file —
+  and guarantees the published tree matches `dist/` exactly.
+
+To publish by hand:
+
 ```powershell
-npx wrangler login        # once, interactive — the only step that needs you
-node scripts/deploy.mjs   # database, binding, project, upload, first sync
+npm run publish      # seed → ingest → build → push gh-pages
+npm run build        # just rebuild dist/ from the local database
+npm run deploy       # push dist/ without rebuilding
 ```
-
-That is the whole deploy. The script reuses an existing database and project rather than recreating
-them, so it is safe to run again. It prints the live URL when it is done — `https://sift.pages.dev`.
-
-**Keeping it warm without opening the page:** `.github/workflows/sync.yml` is already written — a
-GitHub Actions schedule that hits `/api/sync` every 15 minutes. Pages Functions do not have their own
-cron trigger; this is the supported pattern, and it starts working as soon as the repo is pushed.
 
 ## Layout
 
 ```
 public/               the site: index.html, style.css, app.js, theme.js, font, favicon
-functions/api/        feed.js · sync.js · stats.js
 functions/_lib/       config.mjs (taste) · parse.mjs · clean.mjs · score.mjs · db.mjs · ingest.mjs
 data/                 anime-titles.json (his MAL list + aliases)
-scripts/              live-ingest.mjs · preview.mjs · d1-shim.mjs · build-anime-data.py
-tests/                clean · parse · score (+ config validity)
+scripts/              publish.mjs · seed.mjs · build-static.mjs · deploy-pages.mjs · live-ingest.mjs
+tests/                clean · parse · score · db
 docs/                 SPEC.md · DESIGN.md · SOURCES.md
+dist/                 the built site (generated — never edit, never commit)
 ```
+
+`functions/_lib` is the only folder still named for the edge platform it once ran on. It holds
+the scoring and ingestion rules, which are unchanged and still tested; the name is cosmetic.
 
 ## Rules this project holds itself to
 

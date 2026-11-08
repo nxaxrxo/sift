@@ -1,22 +1,29 @@
 /**
- * preview.mjs — the local loop, with nothing on screen.
+ * preview.mjs — serve the built site locally, with nothing on screen.
  *
  *   node scripts/preview.mjs start   # detached, hidden, port 8788
  *   node scripts/preview.mjs status
  *   node scripts/preview.mjs stop
- *   node scripts/preview.mjs shot [path]   # headless screenshot of the running site
+ *   node scripts/preview.mjs shot    # real screenshots via shot.mjs
  *
- * Why a script and not a shell one-liner: `wrangler pages dev` never exits, so it
- * must never be run in the foreground — it would hold the only lane of whoever
- * started it. Everything here is spawned with `detached` + hidden windows.
+ * It serves `dist/`, because that is exactly what GitHub Pages serves — a preview
+ * of anything else would be a preview of a site that does not exist. Run
+ * `npm run build` first (or `npm run publish`).
+ *
+ * Why a script and not a shell one-liner: a file server never exits, so it must
+ * never run in the foreground — it would hold the only lane of whoever started it.
+ * Everything here is spawned detached, with a hidden window and a pid file.
  */
 
 import { spawn } from "node:child_process";
+import { createServer } from "node:http";
 import { existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { readFile } from "node:fs/promises";
+import { join, resolve, extname, normalize } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 
 const ROOT = resolve(import.meta.dirname, "..");
+const DIST = join(ROOT, "dist");
 const DEV = join(ROOT, ".dev");
 const PID_FILE = join(DEV, "preview.pid");
 const LOG_FILE = join(DEV, "preview.log");
@@ -24,14 +31,25 @@ const PORT = Number(process.env.PREVIEW_PORT || 8788);
 
 const isWindows = process.platform === "win32";
 
+const TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".woff2": "font/woff2",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".ico": "image/x-icon",
+};
+
 function ensureDev() {
   mkdirSync(DEV, { recursive: true });
 }
 
 function readPid() {
   if (!existsSync(PID_FILE)) return null;
-  const raw = readFileSync(PID_FILE, "utf8").trim();
-  const pid = Number(raw);
+  const pid = Number(readFileSync(PID_FILE, "utf8").trim());
   return Number.isFinite(pid) && pid > 0 ? pid : null;
 }
 
@@ -57,6 +75,44 @@ async function reachable(url, attempts = 40) {
   return false;
 }
 
+/**
+ * The server itself. It runs inside the detached child (see `serve`), and it is
+ * deliberately dumb: files only, no API, because there is no API any more.
+ */
+function createStaticServer() {
+  return createServer(async (request, response) => {
+    const requested = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
+    const relative = requested === "/" ? "index.html" : requested.replace(/^\/+/, "");
+    const file = normalize(join(DIST, relative));
+
+    // Never serve a byte outside dist/, whatever the request asks for.
+    if (!file.startsWith(DIST)) {
+      response.writeHead(403).end("forbidden");
+      return;
+    }
+
+    try {
+      const body = await readFile(file);
+      response.writeHead(200, { "content-type": TYPES[extname(file)] || "application/octet-stream" });
+      response.end(body);
+    } catch {
+      response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+      response.end("not found");
+    }
+  });
+}
+
+/** Entry point for the detached child: serve, log, and stay out of the way. */
+function serve() {
+  if (!existsSync(join(DIST, "index.html"))) {
+    console.error("dist/ is missing — run `npm run build` first");
+    process.exit(1);
+  }
+  createStaticServer().listen(PORT, "127.0.0.1", () => {
+    console.log(`serving ${DIST} on http://localhost:${PORT}`);
+  });
+}
+
 function start() {
   ensureDev();
   const existing = readPid();
@@ -66,18 +122,12 @@ function start() {
   }
 
   const out = openSync(LOG_FILE, "w");
-  const command = isWindows ? "npx.cmd" : "npx";
-  const child = spawn(
-    command,
-    ["wrangler", "pages", "dev", "public", "--port", String(PORT), "--d1", "DB=sift-db", "--persist-to", ".dev/d1"],
-    {
-      cwd: ROOT,
-      detached: true,
-      stdio: ["ignore", out, out],
-      windowsHide: true,
-      shell: isWindows,
-    },
-  );
+  const child = spawn(process.execPath, [import.meta.filename, "serve"], {
+    cwd: ROOT,
+    detached: true,
+    stdio: ["ignore", out, out],
+    windowsHide: true,
+  });
   child.unref();
 
   writeFileSync(PID_FILE, String(child.pid), "utf8");
@@ -103,66 +153,35 @@ function stop() {
 async function status() {
   const pid = readPid();
   const alive = Boolean(pid && isAlive(pid));
-  const up = await reachable(`http://localhost:${PORT}/api/stats`, 2);
-  console.log(`pid ${pid ?? "—"} alive=${alive} api=${up ? "up" : "down"} port=${PORT}`);
+  const up = await reachable(`http://localhost:${PORT}/`, 2);
+  console.log(`pid ${pid ?? "—"} alive=${alive} site=${up ? "up" : "down"} port=${PORT}`);
 }
 
 /**
- * Screenshot through the installed Edge/Chrome in headless mode. No dependencies,
- * no window, and the cursor is never touched.
+ * Screenshots go through shot.mjs, which drives a real 1440 / 820 / 390 viewport
+ * over the DevTools protocol. A headless `--window-size` is not trustworthy here:
+ * both Edge and Chrome clamp it near 496px, so a "390" capture renders at 496.
  */
-async function shot(target = ROOT) {
-  ensureDev();
-  const name = `shot-${Date.now()}.png`;
-  const file = join(DEV, name);
-  const url = `http://localhost:${PORT}/`;
-  const candidates = [
-    "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
-    "C:/Program Files/Microsoft/Edge/Application/msedge.exe",
-    "C:/Program Files/Google/Chrome/Application/chrome.exe",
-  ];
-  const browser = candidates.find((path) => existsSync(path));
-  if (!browser) {
-    console.error("no headless browser found");
-    process.exit(1);
-  }
-
-  const widths = [
-    ["desktop", 1440, 2000],
-    ["mobile", 420, 1600],
-  ];
-  const results = [];
-
-  for (const [label, width, height] of widths) {
-    const out = file.replace(".png", `-${label}.png`);
-    await new Promise((done) => {
-      const child = spawn(
-        browser,
-        [
-          "--headless=new",
-          "--disable-gpu",
-          "--hide-scrollbars",
-          `--window-size=${width},${height}`,
-          `--screenshot=${out}`,
-          "--virtual-time-budget=9000",
-          url,
-        ],
-        { windowsHide: true, stdio: "ignore", detached: false },
-      );
-      child.on("exit", done);
-      child.on("error", done);
+async function shot() {
+  await new Promise((done) => {
+    const child = spawn(process.execPath, [join(ROOT, "scripts", "shot.mjs")], {
+      cwd: ROOT,
+      stdio: "inherit",
+      windowsHide: true,
     });
-    results.push(out);
-  }
-  console.log(results.join("\n"));
+    child.on("exit", done);
+    child.on("error", done);
+  });
 }
 
 const command = process.argv[2] || "status";
 
 if (command === "start") {
   start();
-  const up = await reachable(`http://localhost:${PORT}/api/stats`);
+  const up = await reachable(`http://localhost:${PORT}/`);
   console.log(up ? `ready on http://localhost:${PORT}` : "did not come up — check .dev/preview.log");
+} else if (command === "serve") {
+  serve();
 } else if (command === "stop") {
   stop();
 } else if (command === "shot") {
