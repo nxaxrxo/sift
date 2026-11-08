@@ -1,4 +1,4 @@
-name: Refresh the board
+﻿name: Refresh the board
 
 # Every 15 minutes: read the feeds, rebuild the site, publish it.
 #
