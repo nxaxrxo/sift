@@ -28,7 +28,7 @@ It is not a replacement for the Beacon's writing. It replaces the *checking*.
 ## How it works
 
 ```
-140 feeds → parse → score → dedupe → SQLite → build → board.json → the page
+181 feeds → parse → score → dedupe → SQLite → build → board.json → the page
  (per run)             taste            url + title key          cursor paged
 ```
 
@@ -88,7 +88,7 @@ Reads the published board and prints a ranked brief — one command, no research
 **Live at https://nxaxrxo.github.io/sift/**
 
 It publishes itself. `scripts/publish.mjs` does the whole job: seed the database from the
-live board, read all 140 feeds, rebuild the site, force-push an orphan `gh-pages` branch that
+live board, read all 181 feeds, rebuild the site, force-push an orphan `gh-pages` branch that
 Pages serves. There is no server, no database account, and no secret.
 
 The scheduled GitHub workflow is currently **parked at `docs/sync.yml.disabled`** — GitHub

@@ -79,7 +79,7 @@ Unregister-ScheduledTask -TaskName "SiftRefresh" -Confirm:$false
 ```
 
 It runs `scripts/refresh-local.ps1` every 30 minutes, hidden, via the same `scripts/publish.mjs`
-the workflow calls — so it seeds from the live board, ingests all 140 feeds, rebuilds and pushes
+the workflow calls — so it seeds from the live board, ingests all 181 feeds, rebuilds and pushes
 `gh-pages`, exactly as CI would. A lock file stops two runs overlapping, since a publish takes
 about three minutes. Log and exit code land in `.dev/refresh.log` and `.dev/refresh.done`.
 

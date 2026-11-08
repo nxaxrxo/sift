@@ -229,6 +229,74 @@ export const SOURCES = [
   news("interconnects", "Interconnects", "https://www.interconnects.ai/feed", 2, ["ai"], "https://www.interconnects.ai"),
   news("importai", "Import AI", "https://importai.substack.com/feed", 2, ["ai"], "https://importai.substack.com"),
   news("aisafety", "AI Safety Newsletter", "https://newsletter.safe.ai/feed", 1, ["ai"], "https://newsletter.safe.ai"),
+
+  // Second pass. The first 58 filled the obvious gaps; these are the outlets that
+  // were verified live in the same sweep but are narrower still — single-topic
+  // blogs, one-country desks, studio diaries. All fetched live before adding, same
+  // as above. Deliberately left out: arXiv cs.AI / cs.LG and Alignment Forum,
+  // which publish hundreds of items a day and would bury everything else in the AI
+  // lane. A feed like that needs its own scoring model, not a weight.
+
+  // Indie press, still.
+  news("bulletpoints", "Bullet Points Monthly", "https://bulletpointsmonthly.com/rss.xml", 1, ["indie"], "https://bulletpointsmonthly.com"),
+  news("sidequest", "Sidequest", "https://sidequest.zone/feed/", 2, ["indie", "gamedev"], "https://sidequest.zone"),
+
+  // Anime and manga, English.
+  news("beneaththetangles", "Beneath the Tangles", "https://beneaththetangles.com/feed/", 1, ["anime"], "https://beneaththetangles.com"),
+  news("comicsbeat", "Comics Beat", "https://www.comicsbeat.com/feed/", 2, ["anime", "business"], "https://www.comicsbeat.com"),
+
+  // Japanese — hobby, VR and the domestic arcade scene.
+  news("dengekihobby", "Dengeki Hobby Web", "https://dengeki.com/feed", 1, ["anime"], "https://dengeki.com"),
+  news("mogulive", "MoguLive", "https://www.moguravr.com/feed/", 1, ["tech", "gaming"], "https://www.moguravr.com"),
+  news("panora", "Panora", "https://panora.tokyo/feed", 1, ["tech"], "https://panora.tokyo"),
+
+  // Regional desks — one editorial judgement per country.
+  news("actugaming", "ActuGaming", "https://www.actugaming.net/feed/", 1, ["gaming"], "https://www.actugaming.net"),
+  news("gameblog", "Gameblog", "https://www.gameblog.fr/rss", 1, ["gaming"], "https://www.gameblog.fr"),
+  news("eurogamer-pl", "Eurogamer Poland", "https://www.eurogamer.pl/feed", 1, ["gaming"], "https://www.eurogamer.pl"),
+  news("eurogamer-pt", "Eurogamer Portugal", "https://www.eurogamer.pt/feed", 1, ["gaming"], "https://www.eurogamer.pt"),
+  news("eurogamer-es", "Eurogamer Spain", "https://www.eurogamer.es/feed", 1, ["gaming"], "https://www.eurogamer.es"),
+  news("gamereactor", "Gamereactor", "https://www.gamereactor.eu/feed/", 1, ["gaming"], "https://www.gamereactor.eu"),
+  news("gamereactor-dk", "Gamereactor Denmark", "https://www.gamereactor.dk/feed/", 1, ["gaming"], "https://www.gamereactor.dk"),
+  news("gamereactor-no", "Gamereactor Norway", "https://www.gamereactor.no/feed/", 1, ["gaming"], "https://www.gamereactor.no"),
+  news("gamereactor-se", "Gamereactor Sweden", "https://www.gamereactor.se/feed/", 1, ["gaming"], "https://www.gamereactor.se"),
+  news("grampl", "Gram.pl", "https://www.gram.pl/rss/content.xml", 1, ["gaming"], "https://www.gram.pl"),
+  news("ign-benelux", "IGN Benelux", "https://nl.ign.com/feed.xml", 1, ["gaming"], "https://nl.ign.com"),
+
+  // Retro and preservation — the primary sources, plus the people who reverse them.
+  news("arcadeblogger", "Arcade Blogger", "https://www.arcadeblogger.com/feed/", 2, ["games", "tech"], "https://www.arcadeblogger.com"),
+  news("dolphin", "Dolphin Emulator", "https://dolphin-emu.org/blog/feeds/", 2, ["gamedev"], "https://dolphin-emu.org"),
+  news("fabien", "Fabien Sanglard", "https://fabiensanglard.net/rss.xml", 2, ["games", "gamedev"], "https://fabiensanglard.net"),
+  news("unseen64", "Unseen64", "https://www.unseen64.net/feed/", 2, ["games"], "https://www.unseen64.net"),
+  news("vghf", "Video Game History Foundation", "https://gamehistory.org/feed/", 2, ["games"], "https://gamehistory.org"),
+
+  // AI with substance. Research labs rather than vendor marketing, and one
+  // practitioner whose posts hold up as journalism (Simon Willison).
+  news("simonwillison", "Simon Willison", "https://simonwillison.net/atom/everything/", 2, ["ai", "gamedev"], "https://simonwillison.net"),
+  news("latentspace", "Latent Space", "https://www.latent.space/feed", 2, ["ai"], "https://www.latent.space"),
+  news("deepmind", "Google DeepMind", "https://deepmind.google/discover/blog/feed", 2, ["ai"], "https://deepmind.google"),
+  news("googleresearch", "Google Research", "https://research.google/blog/rss/", 1, ["ai"], "https://research.google"),
+  news("bair", "BAIR Blog", "https://bair.berkeley.edu/blog/feed.xml", 2, ["ai"], "https://bair.berkeley.edu"),
+  news("epochai", "Epoch AI", "https://epoch.ai/atom.xml", 2, ["ai"], "https://epoch.ai"),
+  news("oneusefulthing", "One Useful Thing", "https://www.oneusefulthing.org/feed", 2, ["ai"], "https://www.oneusefulthing.org"),
+  news("aheadofai", "Ahead of AI", "https://magazine.sebastianraschka.com/feed", 2, ["ai"], "https://magazine.sebastianraschka.com"),
+  news("msresearch", "Microsoft Research", "https://www.microsoft.com/en-us/research/feed/", 1, ["ai"], "https://www.microsoft.com/en-us/research"),
+
+  // The money side, and studios that write their own diaries.
+  news("gamediscoverco", "GameDiscoverCo", "https://newsletter.gamediscover.co/feed", 2, ["business"], "https://newsletter.gamediscover.co"),
+  news("kantangames", "Kantan Games", "https://www.serkantoto.com/feed/", 2, ["business"], "https://www.serkantoto.com"),
+  news("thegamebusiness", "The Game Business", "https://www.thegamebusiness.com/feed", 2, ["business"], "https://www.thegamebusiness.com"),
+  news("mcvuk", "MCV/Develop", "https://mcvuk.com/feed/", 1, ["business"], "https://mcvuk.com"),
+  news("pocketgamerbiz", "PocketGamer.biz", "https://www.pocketgamer.biz/rss", 1, ["business"], "https://www.pocketgamer.biz"),
+  news("rawfury", "Raw Fury", "https://rawfury.com/feed/", 1, ["indie", "gamedev"], "https://rawfury.com"),
+  news("innersloth", "Innersloth", "https://www.innersloth.com/feed/", 1, ["indie", "gamedev"], "https://www.innersloth.com"),
+
+  // Modding — where a lot of the actual game preservation happens.
+  // Nexus Mods is absent on purpose: its news feed answers 403 to anything that is
+  // not a browser, so it would log a failure on every single run. A dead source
+  // that never dies is worse than no source.
+  news("openmw", "OpenMW", "https://openmw.org/feed", 1, ["gamedev"], "https://openmw.org"),
+  news("skyblivion", "Skyblivion", "https://skyblivion.com/rss.xml", 1, ["gamedev"], "https://skyblivion.com"),
 ];
 
 /* -------------------------------------------------------------------- TASTE */
