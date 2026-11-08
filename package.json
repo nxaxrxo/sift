@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test tests/clean.test.mjs tests/parse.test.mjs tests/score.test.mjs tests/db.test.mjs",
     "ingest": "node scripts/live-ingest.mjs",
+    "deploy": "node scripts/deploy.mjs",
     "dev": "node scripts/preview.mjs start",
     "stop": "node scripts/preview.mjs stop",
     "shot": "node scripts/preview.mjs shot",

@@ -51,30 +51,33 @@ You are not authenticated. Please run `wrangler login`.
 There is no Cloudflare token in the vault and none in the environment, so the deploy cannot
 be finished from here.
 
+Two commands, total:
+
 ```powershell
 cd C:\Users\MarciNaro\Documents\VSCODE-PROJECTS\sift
-npx wrangler login                    # opens a browser, one click
-npx wrangler d1 create sift-db        # prints a database_id
+npx wrangler login     # opens a browser, one click, done
+node scripts/deploy.mjs
 ```
 
-Paste that id into `wrangler.toml`, replacing the placeholder:
+`scripts/deploy.mjs` (also `npm run deploy`) does the rest and stops at the first failure with
+the reason: creates `sift-db` if it does not exist, writes its id into `wrangler.toml`, creates
+the Pages project, uploads `public/`, then pokes `/api/sync` until the board has cards. It is
+safe to re-run — an existing database and project are reused, never recreated.
 
-```toml
-database_id = "00000000-0000-0000-0000-000000000000"
-```
+It prints the live URL at the end. Expect `https://sift.pages.dev`.
 
-Then:
+### Keeping it fed
 
-```powershell
-npx wrangler pages project create sift --production-branch main
-npx wrangler pages deploy public --project-name sift
-```
+`.github/workflows/sync.yml` is already written and committed: a GitHub Actions schedule that
+pokes `https://sift.pages.dev/api/sync` every 15 minutes. Pages Functions have no cron trigger of
+their own, so this is the supported pattern. It needs nothing from you beyond the push — it will
+start running the moment the repository is on GitHub (and the first few runs will 404 harmlessly
+until the site is deployed).
 
-First page load triggers a sync. The site is then at `https://sift.pages.dev`.
+If the project name or domain ends up different, change the one `url=` line in that file.
 
-To keep it fed without anyone visiting, point any free cron at
-`https://sift.pages.dev/api/sync` every 10 minutes — Pages Functions have no cron trigger of
-their own, and this is the supported pattern.
+You can also trigger it by hand from the Actions tab, or point any other free cron at the same
+URL instead.
 
 ---
 

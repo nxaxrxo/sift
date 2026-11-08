@@ -1,0 +1,44 @@
+name: sync
+
+# Pages Functions have no cron trigger of their own, so this is the supported
+# pattern: a scheduler whose only job is to poke /api/sync. The endpoint answers
+# immediately and does the fetch work in the background, so this stays cheap.
+#
+# GitHub's shortest schedule is 5 minutes and it is not a promise - runs are
+# often a few minutes late and are skipped entirely when the repository is quiet.
+# Every 15 minutes is enough for a news board and keeps the request count low.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ask the board to go and look
+        run: |
+          # A cold board answers slowly, and the first request after a deploy has
+          # to create the schema. One retry covers both. The board answers with
+          # JSON either way, so the status code plus the body is the whole check.
+          # No force flag: the endpoint's own 45-second staleness window is well
+          # inside this schedule, so a ping every 15 minutes always starts a run.
+          url="https://sift.pages.dev/api/sync"
+          for attempt in 1 2 3; do
+            code=$(curl -sS -o /tmp/sync.json -w "%{http_code}" --max-time 60 "$url" || echo "000")
+            echo "attempt $attempt -> HTTP $code"
+            cat /tmp/sync.json || true
+            echo
+            if [ "$code" = "200" ]; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "sync endpoint did not answer 200 after 3 attempts" >&2
+          exit 1
