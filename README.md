@@ -18,7 +18,7 @@ rules instead of a model:
 | | Daily Beacon | Sift |
 |---|---|---|
 | what it is | a written newspaper | a moodboard of links |
-| cadence | every 2 days, 03:00 | continuous, re-read every 60s |
+| cadence | every 2 days, 03:00 | one pull, then on Refresh |
 | cost | tokens per edition | nothing |
 | depth | one screen of prose | scroll back 120 days |
 | click | opens the source at the end | the whole card is the link |
@@ -28,16 +28,22 @@ It is not a replacement for the Beacon's writing. It replaces the *checking*.
 ## How it works
 
 ```
-181 feeds → parse → score → dedupe → SQLite → build → board.json → the page
+149 feeds → parse → score → dedupe → SQLite → build → board.json → the page
  (per run)             taste            url + title key          cursor paged
 ```
 
 The sources are deliberately not the ones every aggregator carries. Alongside the big
-outlets sit indie-only press and criticism, Japanese desks (4Gamer, Game*Spark,
-Denfaminicogamer), French, Polish, Chinese, Italian and Spanish press, engine blogs
-(Bevy, Defold, GameMaker), game preservation and emulation projects (Hidden Palace,
-ScummVM, melonDS), the fighting-game scene and AI research rather than vendor blogging.
-Every URL was fetched and confirmed live before it was added.
+outlets sit indie-only press and criticism, engine blogs (Bevy, Defold, GameMaker), game
+preservation and emulation projects (Hidden Palace, ScummVM, melonDS), the fighting-game
+scene and AI research rather than vendor blogging. Every URL was fetched and confirmed live
+before it was added.
+
+**English only.** The board carries 149 English-language feeds. Regional and non-English
+editions were taken out — Japanese, French, Polish, Spanish, Italian, Portuguese, German,
+Dutch, Nordic and Chinese desks — while the English edition of the same brand stayed
+(Automaton, Eurogamer, Gamereactor, IGN). A foreign story syndicated by an English feed is
+dropped at scoring time by `isEnglishText()`, and already-stored rows are purged by
+`scripts/purge-language.mjs`, which runs inside every publish.
 
 1. **Fetch.** Every source in parallel, 12s timeout each. A dead feed is counted and skipped; the run
    always finishes.
@@ -53,6 +59,18 @@ Every URL was fetched and confirmed live before it was added.
    `api/board.json`; the page slices that array as you scroll. Ordering in one place means
    no cursor arithmetic and no way for the client to disagree with the database about what
    comes next.
+
+### Reading it
+
+- **Refresh is the only source of new material.** Nothing polls in the background. New
+  items arrive when you press the Refresh button (or the `R` key, or retry from the error
+  state), so the board never reflows under you mid-scroll.
+- **Every card carries a calendar date** — `8 Nov`, or `20 Oct 2026` when the year differs.
+  A timestamp is never in the future; a feed with a broken clock shows "just now". Items
+  seven days or older show the date alone, and the full timestamp is on hover.
+- **The theme is borderless.** No borders or thin lines anywhere except `:focus-visible`;
+  depth comes from solid colour steps. Media is 4:3, columns are 330px, summaries run to
+  four lines (six on type cards).
 
 ## Taste is a file, not a model
 
@@ -88,8 +106,9 @@ Reads the published board and prints a ranked brief — one command, no research
 **Live at https://nxaxrxo.github.io/sift/**
 
 It publishes itself. `scripts/publish.mjs` does the whole job: seed the database from the
-live board, read all 181 feeds, rebuild the site, force-push an orphan `gh-pages` branch that
-Pages serves. There is no server, no database account, and no secret.
+live board, read all 149 feeds, purge anything not in English, rebuild the site, force-push
+an orphan `gh-pages` branch that Pages serves. There is no server, no database account, and
+no secret.
 
 The scheduled GitHub workflow is currently **parked at `docs/sync.yml.disabled`** — GitHub
 refuses a push that touches `.github/workflows/*` unless the token carries the `workflow`
@@ -103,14 +122,17 @@ Two things worth knowing:
   `scripts/seed.mjs` first restores the database from the currently published board (the live
   URL), then ingests on top of it. Without that step the board would reset to a single ingest
   every 15 minutes.
+- **The seed also restores old rows.** Because the published board still contains whatever
+  was there before, the pipeline purges after ingest: `scripts/purge-language.mjs` drops
+  non-English rows and rows from sources no longer in the config, before the build.
 - **`gh-pages` is an artifact, not history.** Each publish is an orphan commit, force-pushed.
-  That keeps the repository small — otherwise every run would add another ~900 KB board file —
+  That keeps the repository small — otherwise every run would add another ~1.6 MB board file —
   and guarantees the published tree matches `dist/` exactly.
 
 To publish by hand:
 
 ```powershell
-npm run publish      # seed → ingest → build → push gh-pages
+npm run publish      # seed → ingest → purge → build → push gh-pages
 npm run build        # just rebuild dist/ from the local database
 npm run deploy       # push dist/ without rebuilding
 ```
