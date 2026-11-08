@@ -24,8 +24,9 @@ const API = {
   stats: "api/stats.json",
 };
 
-const PAGE_SIZE = 30;
-const MAX_CARDS = 240;
+// How many cards one scroll paints. A large batch means the reader scrolls
+// through content that is already laid out, never through content being laid out.
+const BATCH_SIZE = 90;
 const SEARCH_DEBOUNCE_MS = 300;
 const HIDDEN_KEY = "sift.hidden";
 const THEME_KEY = "sift.theme";
@@ -276,38 +277,70 @@ function buildCard(item) {
   return card;
 }
 
-function appendItems(items, { prepend = false } = {}) {
-  const fresh = items.filter((item) => !hidden.has(item.urlKey));
+/**
+ * How many columns the board shows. Mirrors the old CSS width breakpoints:
+ * one column on a phone, two on a tablet, then as many 330px tracks as fit.
+ */
+function columnCount() {
+  const width = el.cards.clientWidth || window.innerWidth;
+  if (width < 560) return 1;
+  if (width < 900) return 2;
+  return Math.max(3, Math.min(5, Math.floor(width / 330)));
+}
+
+/** Create (or reuse) the fixed columns. Called on load and on resize. */
+function buildColumns() {
+  const want = columnCount();
+  const have = el.cards.querySelectorAll(".board__col").length;
+  if (have === want) return;
+
+  // Re-flow the content we already have into the new column count rather than
+  // asking the reader to reload. Order is preserved by taking the cards in
+  // document order and re-dealing them.
+  const existing = [...el.cards.querySelectorAll(".card")];
+  el.cards.replaceChildren();
+  cols.length = 0;
+  for (let index = 0; index < want; index += 1) {
+    const column = node("div", "board__col");
+    el.cards.append(column);
+    cols.push(column);
+  }
+  for (const card of existing) shortestColumn().append(card);
+}
+
+/** The column with the least content so far. The whole point of the layout. */
+function shortestColumn() {
+  let best = cols[0];
+  for (const column of cols) {
+    if (column.offsetHeight < best.offsetHeight) best = column;
+  }
+  return best;
+}
+
+/**
+ * Every card painted on this visit, by urlKey — so one story can never appear
+ * twice however the scroll is resumed or filtered.
+ */
+const painted = new Set();
+
+/** The fixed column elements, in order. */
+const cols = [];
+
+function appendItems(items) {
+  const fresh = items.filter(
+    (item) => !hidden.has(item.urlKey) && !painted.has(item.urlKey),
+  );
   if (!fresh.length) return 0;
 
-  const fragment = document.createDocumentFragment();
-  for (const item of fresh) fragment.append(buildCard(item));
-
-  if (prepend) {
-    el.cards.prepend(fragment);
-    trimOverflow();
-  } else {
-    el.cards.append(fragment);
+  for (const item of fresh) {
+    painted.add(item.urlKey);
+    shortestColumn().append(buildCard(item));
   }
   el.cards.setAttribute("aria-busy", "false");
   return fresh.length;
 }
 
-/**
- * The board is a scroll that never ends, so the DOM must not grow forever.
- * Oldest cards fall off the bottom; scrolling back that far simply reloads them.
- */
-function trimOverflow() {
-  const cards = el.cards.querySelectorAll(".card");
-  const overflow = cards.length - MAX_CARDS;
-  if (overflow <= 0) return;
-  for (let index = cards.length - 1; index >= cards.length - overflow; index -= 1) {
-    cards[index].remove();
-  }
-}
-
 function renderSkeletons(count = 8) {
-  const fragment = document.createDocumentFragment();
   for (let index = 0; index < count; index += 1) {
     const skeleton = node("div", "skeleton");
     skeleton.append(node("div", "skeleton__media"));
@@ -320,10 +353,11 @@ function renderSkeletons(count = 8) {
       node("div", "skeleton__line skeleton__line--sum2"),
     );
     skeleton.append(body);
-    fragment.append(skeleton);
+    // Skeletons go into the columns too, so nothing appears in a strip beside the
+    // board while it loads.
+    shortestColumn().append(skeleton);
   }
   el.cards.classList.add("is-loading");
-  el.cards.append(fragment);
 }
 
 function clearSkeletons() {
@@ -332,7 +366,12 @@ function clearSkeletons() {
 }
 
 function clearBoard() {
+  // Rebuild the columns rather than emptying the board: the columns own the
+  // layout now, so they have to survive a filter change or a refresh.
   el.cards.replaceChildren();
+  cols.length = 0;
+  painted.clear();
+  buildColumns();
   el.empty.hidden = true;
 }
 
@@ -387,7 +426,7 @@ async function loadBoard({ cacheBust = false } = {}) {
 }
 
 function pageItems() {
-  return state.filtered.slice(state.offset, state.offset + PAGE_SIZE);
+  return state.filtered.slice(state.offset, state.offset + BATCH_SIZE);
 }
 
 function hasMorePages() {
@@ -411,8 +450,8 @@ async function loadFirstPage({ cacheBust = false } = {}) {
     const items = pageItems();
     state.offset += items.length;
 
-    const painted = appendItems(items);
-    if (!painted) {
+    const count = appendItems(items);
+    if (!count) {
       showEmpty(state.filtered.length ? "Everything here is hidden." : "", state.filtered.length ? "hidden" : "none");
     } else {
       el.empty.hidden = true;
@@ -439,8 +478,12 @@ async function loadMore() {
     state.offset += items.length;
     if (!hasMorePages()) state.exhausted = true;
 
-    const painted = appendItems(items);
-    if (!painted && !hasMorePages()) state.exhausted = true;
+    const count = appendItems(items);
+    if (!count && !hasMorePages()) state.exhausted = true;
+    // A batch that was entirely already-painted (or hidden) must not stall the
+    // scroll: ask for the next slice on the next frame instead of waiting for an
+    // intersection event that may never come.
+    else if (!count) requestAnimationFrame(loadMore);
     updateStatus();
   } catch (error) {
     setStatus(`Couldn't load more — ${error.message}. Scroll to retry.`);
@@ -699,6 +742,18 @@ function wireEvents() {
   );
   observer.observe(el.sentinel);
 
+  // A resize can change the column count. Re-deal the cards we already have
+  // rather than reloading, so a window drag never loses the reader's place.
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const before = columnCount();
+      if (before === cols.length) return;
+      buildColumns();
+    }, 180);
+  });
+
   document.addEventListener("keydown", (event) => {
     const typing = /^(input|textarea|select)$/i.test(document.activeElement?.tagName || "");
     if (event.key === "/" && !typing) {
@@ -743,6 +798,10 @@ async function boot() {
   readUrl();
   wireEvents();
   updateLive();
+
+  // The columns must exist before the first paint — cards are appended straight
+  // into them, not into the board element itself.
+  buildColumns();
 
   await loadFirstPage();
   loadFooterStats();

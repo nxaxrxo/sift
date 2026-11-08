@@ -339,18 +339,35 @@ main {
   padding: 20px var(--gutter) 0;
 }
 
+/* Explicit columns instead of CSS `columns:`.
+
+   `columns: 330px` looks like masonry and behaves like a newspaper: every time a
+   card is appended the browser re-flows the whole block, so cards already on
+   screen get pulled into different columns and the reader watches the page
+   reshuffle under their thumb. On a board that grows forever, that is constant
+   motion and it re-shows stories that had scrolled away.
+
+   Three real columns never re-flow. A card is appended to whichever column is
+   currently shortest, so the layout stays balanced without anything above it
+   ever moving. The column count is set in JS, because it depends on width. */
 .board {
-  columns: var(--col-w);
-  column-gap: var(--col-gap);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--col-gap);
+}
+.board__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--col-gap);
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 /* ------------------------------------------------------------------ 7. CARD */
 
 .card {
   position: relative;
-  break-inside: avoid;
   page-break-inside: avoid;
-  margin: 0 0 var(--col-gap);
   border: 0;
   border-radius: var(--r-card);
   background: var(--card);
@@ -358,8 +375,10 @@ main {
   text-decoration: none;
   display: block;
   overflow: hidden;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 420px;
+  /* No content-visibility here on purpose. In a multi-column layout the browser
+     re-flows every column when a card's estimated height is corrected to its
+     real height, and that happens while the reader is looking at it — the cards
+     visibly jump. Real rendering is cheap enough for a few hundred cards. */
   transition: background-color 140ms ease;
 }
 .card:hover { background: var(--card-2); }
@@ -384,7 +403,12 @@ main {
 .card__img.is-loaded { opacity: 1; }
 .card:hover .card__img { transform: scale(1.015); }
 
-.card__body { padding: var(--pad) 17px 0; }
+/* --pad is two values ("15px 17px"), so writing `padding: var(--pad) 17px 0`
+   silently expands to top/right/bottom/left = 15/17/17/0 — no left padding at
+   all. Text cards hid it because .card--type below restores 18px on every side;
+   image cards took it straight in the face and the words ran into the rounded
+   edge. Spell all four values out and never let a shorthand eat the left side. */
+.card__body { padding: 15px 17px 0; }
 
 /* A card with no image is a type card: no empty frame, room for the words
    instead. These are the text-only outlets and they should look deliberate. */
@@ -524,8 +548,6 @@ main {
 /* ---------------------------------------------------------------- 8. STATES */
 
 .skeleton {
-  break-inside: avoid;
-  margin: 0 0 var(--col-gap);
   border-radius: var(--r-card);
   background: var(--card);
   overflow: hidden;
@@ -704,7 +726,6 @@ main {
 
 @media (max-width: 460px) {
   :root { --col-w: 100%; }
-  .board { columns: 1; }
   .card__title { -webkit-line-clamp: 4; line-clamp: 4; }
   .card__sum { -webkit-line-clamp: 4; line-clamp: 4; }
 }
@@ -712,7 +733,7 @@ main {
 @media print {
   .rail, .newbar, .iconbtn, .refresh, .card__hide, .sentinel { display: none; }
   body { background: #fff; color: #000; }
-  .board { columns: 300px; }
+  .board { display: block; }
   .card { break-inside: avoid; background: #fff; }
   .card__when { background: #eee; }
 }
