@@ -217,7 +217,10 @@ export const SOURCES = [
 
   // Retro, preservation and emulation — primary-source game history.
   news("hg101", "Hardcore Gaming 101", "https://www.hardcoregaming101.net/feed", 2, ["games", "tech"], "https://www.hardcoregaming101.net"),
-  news("hiddenpalace", "Hidden Palace", "https://hiddenpalace.org/w/index.php?title=Special:RecentChanges&feed=atom", 2, ["games"], "https://hiddenpalace.org"),
+  // The plain RecentChanges feed is a firehose of MediaWiki housekeeping — every
+  // uploaded image and user page arrives as its own item. namespace=0 restricts
+  // it to actual articles, which is the only part worth reading.
+  news("hiddenpalace", "Hidden Palace", "https://hiddenpalace.org/w/index.php?title=Special:RecentChanges&feed=atom&namespace=0&limit=50", 2, ["games"], "https://hiddenpalace.org"),
   news("retronauts", "Retronauts", "https://retronauts.com/feed", 2, ["games"], "https://retronauts.com"),
   news("gamingalexandria", "Gaming Alexandria", "https://www.gamingalexandria.com/wp/feed/", 2, ["games"], "https://www.gamingalexandria.com"),
   news("filfre", "The Digital Antiquarian", "https://www.filfre.net/feed/", 2, ["games"], "https://www.filfre.net"),
@@ -397,6 +400,20 @@ export const TASTE = {
     ["porn", "xxx", "nsfw", "onlyfans"],
     ["casino", "betting odds", "free spins", "sportsbook"],
     ["sponsored content", "[ad]", "[promoted]"],
+    // Wiki housekeeping, not news. Hidden Palace's recent-changes feed lists
+    // every uploaded file as its own item, so the board filled up with entries
+    // titled "File:SRR2FinalDebugSep122003Title.png" and a body reading "Gonzo
+    // uploaded ... Uploaded a work by null from null with Media Uploader".
+    // Nobody wants to read a file's metadata. Written to catch any MediaWiki
+    // file or template page, not just that one wiki.
+    [
+      "file:", "uploaded a work by", "== summary ==", "uploaded new page",
+      "uploaded a new version of", "media uploader", "template:",
+      // MediaWiki namespace pages. A "Category:" or "User:" page is a wiki
+      // directory, not a story. Verified against the whole board: every one of
+      // these outside Hidden Palace is zero, so this only ever fires on wikis.
+      "category:", "user:",
+    ],
   ],
 
   /** Freshness bonus curve, in hours. */

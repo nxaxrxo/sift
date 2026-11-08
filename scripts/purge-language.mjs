@@ -13,8 +13,8 @@
  * never have admitted. `--dry` reports without touching anything.
  */
 import { D1Shim } from "./d1-shim.mjs";
-import { SOURCES } from "../functions/_lib/config.mjs";
-import { isEnglishText } from "../functions/_lib/score.mjs";
+import { SOURCES, TASTE } from "../functions/_lib/config.mjs";
+import { isEnglishText, dropReason } from "../functions/_lib/score.mjs";
 
 const args = process.argv.slice(2);
 const dry = args.includes("--dry");
@@ -28,18 +28,25 @@ const page = await db.prepare("SELECT url_key, source_id, title, summary FROM it
 let scanned = 0;
 let goneSource = 0;
 let foreign = 0;
+let unwanted = 0;
 const deleted = [];
 
 for (const row of page.results) {
   scanned += 1;
 
+  const haystack = `${row.title} ${row.summary || ""}`;
   let reason = null;
   if (!liveSources.has(row.source_id)) reason = "source-removed";
-  else if (!isEnglishText(`${row.title} ${row.summary || ""}`)) reason = "not-english";
+  else if (!isEnglishText(haystack)) reason = "not-english";
+  // The drop list is enforced at ingest, but a rule added today has to apply to
+  // what yesterday already stored — otherwise "remove that junk" means "remove it
+  // from tomorrow's items and leave today's on the board".
+  else if (dropReason(haystack)) reason = "unwanted";
 
   if (!reason) continue;
   if (reason === "source-removed") goneSource += 1;
-  else foreign += 1;
+  else if (reason === "not-english") foreign += 1;
+  else unwanted += 1;
   deleted.push({ urlKey: row.url_key, reason, title: row.title });
 }
 
@@ -53,6 +60,7 @@ console.log(`${dry ? "DRY RUN — nothing deleted" : "purged"}`);
 console.log(`rows scanned          : ${scanned}`);
 console.log(`source no longer listed: ${goneSource}`);
 console.log(`not English            : ${foreign}`);
+console.log(`unwanted (drop list)   : ${unwanted}`);
 console.log(`total to remove        : ${deleted.length}`);
 
 const left = await db.prepare("SELECT COUNT(*) AS n FROM items").first();

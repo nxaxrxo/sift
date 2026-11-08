@@ -203,10 +203,15 @@ export function isEnglishText(text) {
   return true;
 }
 
-function dropReason(haystack) {
-  if (!isEnglishText(haystack)) return "not-english";
+export function dropReason(haystack) {
+  // Callers pass a pre-lowered string everywhere in the ingest path, so this is
+  // normally a no-op. It is spelled out because trusting that from a second
+  // caller (the purge script) silently broke the wiki filter: "File:" never
+  // matched "file:" and every upload page survived the clean-up.
+  const text = String(haystack ?? "").toLowerCase();
+  if (!isEnglishText(text)) return "not-english";
   for (const group of TASTE.drop) {
-    if (group.some((term) => containsTerm(haystack, term))) return group[0];
+    if (group.some((term) => containsTerm(text, term))) return group[0];
   }
   return null;
 }

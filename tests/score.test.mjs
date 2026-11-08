@@ -279,6 +279,31 @@ test("scoreItem_dropsAForeignItemEvenFromAnEnglishFeed", () => {
   assert.equal(isStorable(result), false);
 });
 
+test("scoreItem_dropsWikiHousekeeping", () => {
+  // Hidden Palace's recent-changes feed lists every file upload as an item, and
+  // the board filled up with "File:SRR2FinalDebugSep122003Title.png" entries
+  // whose body was upload metadata. The feed now asks for namespace 0 only, but
+  // the gate has to hold regardless of what a wiki decides to syndicate.
+  const junk = [
+    "File:SRR2FinalDebugSep122003Title.png",
+    "File:SRR2FinalDebugSep122003TheWatcher.png",
+    "Category:Escape From Playtime prototypes",
+    "User:CartridgeCulture",
+    "Template:Infobox game",
+  ];
+  for (const title of junk) {
+    const result = scoreItem(item({ title, summary: "" }), newsSource(2), NOW);
+    assert.equal(isStorable(result), false, `kept wiki page: ${title}`);
+  }
+
+  // The actual preservation work must still get through.
+  const real = item({
+    title: "The Simpsons: Hit & Run (Sep 12, 2003 prototype)",
+    summary: "A work-in-progress build of the game, recovered and documented.",
+  });
+  assert.equal(isStorable(scoreItem(real, newsSource(2), NOW)), true);
+});
+
 test("config_sourceWeightsAreSane", () => {
   const byId = Object.fromEntries(SOURCES.map((source) => [source.id, source]));
   assert.equal(byId["godot"].weight, 3);
