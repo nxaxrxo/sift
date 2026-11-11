@@ -111,6 +111,39 @@ test("parseFeed_fallsBackToYoutubeThumbnail", () => {
   assert.equal(items[0].url, "https://youtube.com/watch?v=XbH0GJQvlTY");
 });
 
+test("parseFeed_resolvesRelativeLinksAgainstTheSource", () => {
+  // Retronauts publishes `<link>/article/2582/...</link>`. `new URL()` throws on
+  // that, normaliseUrl returned "", and every item was silently discarded — the
+  // source looked configured and healthy while contributing nothing at all.
+  const relative = `<rss><channel>
+    <item>
+      <title>The Master System Directory: (Cho-Cl)</title>
+      <link>/article/2582/the-master-system-directory-cho-cl</link>
+      <pubDate>Tue, 10 Nov 2026 17:00:00 -0800</pubDate>
+    </item>
+    <item>
+      <title>Protocol relative</title>
+      <link>//cdn.example/2</link>
+    </item>
+    <item>
+      <title>Absolute still works</title>
+      <link>https://retronauts.com/article/3</link>
+    </item>
+  </channel></rss>`;
+
+  const items = parseFeed(relative, {
+    source: { ...source, url: "https://retronauts.com/feed", home: "https://retronauts.com" },
+  });
+
+  assert.equal(items.length, 3);
+  assert.equal(
+    items[0].url,
+    "https://retronauts.com/article/2582/the-master-system-directory-cho-cl",
+  );
+  assert.equal(items[1].url, "https://cdn.example/2");
+  assert.equal(items[2].url, "https://retronauts.com/article/3");
+});
+
 test("parseFeed_survivesMalformedMarkup", () => {
   const broken = `<rss><channel>
     <item><title>Good one</title><link>https://a.example/1</link></item>

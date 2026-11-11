@@ -32,7 +32,12 @@ const noPush = args.includes("--no-push");
 
 const steps = [
   ["seed the archive from the live board", ["scripts/seed.mjs", "--db", db]],
-  ["read the feeds", ["scripts/live-ingest.mjs", "--db", db]],
+  // `--keep` is not optional here. Without it live-ingest deletes the database
+  // file at startup, which threw away the seed that had just been restored, so
+  // every run rebuilt the archive from nothing but whatever the feeds happened
+  // to return in that minute. The board could never grow past one sweep, and a
+  // single sweep only fetches the newest 40 items per feed.
+  ["read the feeds", ["scripts/live-ingest.mjs", "--db", db, "--keep"]],
   // The English-only rule, enforced on the whole table rather than only on new
   // items. Ingest drops foreign stories as they arrive, but the seed step
   // restores whatever the published board already contained, and a source that

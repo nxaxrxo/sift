@@ -279,6 +279,19 @@ export const SOURCES = [
   news("aheadofai", "Ahead of AI", "https://magazine.sebastianraschka.com/feed", 2, ["ai"], "https://magazine.sebastianraschka.com"),
   news("msresearch", "Microsoft Research", "https://www.microsoft.com/en-us/research/feed/", 1, ["ai"], "https://www.microsoft.com/en-us/research"),
 
+  // Primary-source AI: the people who build the models, writing it down
+  // themselves. The AI lane otherwise reads like commentary on commentary —
+  // these are the papers, the framework internals and the quantitative posts
+  // that the newsletters are summarising a week later. Weight 1 keeps vendor
+  // engineering blogs from outranking an actual outlet.
+  news("ai2", "AI2 / Allen Institute", "https://allenai.org/rss.xml", 2, ["ai"], "https://allenai.org"),
+  news("lesswrong", "LessWrong", "https://www.lesswrong.com/feed.xml?view=curated-rss", 1, ["ai"], "https://www.lesswrong.com"),
+  news("mozillaai", "Mozilla AI", "https://blog.mozilla.ai/feed/", 1, ["ai"], "https://blog.mozilla.ai"),
+  news("nvidia", "NVIDIA Developer Blog", "https://developer.nvidia.com/blog/feed/", 1, ["ai", "tech"], "https://developer.nvidia.com/blog/"),
+  news("pytorch", "PyTorch Blog", "https://pytorch.org/blog/feed/", 1, ["ai", "gamedev"], "https://pytorch.org/blog/"),
+  news("sander", "Sander Dieleman", "https://sander.ai/feed.xml", 1, ["ai"], "https://sander.ai"),
+  news("dettmers", "Tim Dettmers", "https://timdettmers.com/feed/", 1, ["ai"], "https://timdettmers.com"),
+
   // The money side, and studios that write their own diaries.
   news("gamediscoverco", "GameDiscoverCo", "https://newsletter.gamediscover.co/feed", 2, ["business"], "https://newsletter.gamediscover.co"),
   news("kantangames", "Kantan Games", "https://www.serkantoto.com/feed/", 2, ["business"], "https://www.serkantoto.com"),

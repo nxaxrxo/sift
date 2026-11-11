@@ -74,6 +74,38 @@ export function parseDate(value) {
   return null;
 }
 
+/**
+ * Turn a feed's link into something clickable.
+ *
+ * Most feeds publish absolute URLs, but not all: Retronauts emits
+ * `<link>/article/2582/the-master-system-directory-cho-cl</link>`. `new URL()`
+ * throws on that, `normaliseUrl` returns an empty string, and every item in the
+ * feed is then discarded — the source looks configured and alive while
+ * contributing nothing, which is the quietest failure this pipeline has.
+ *
+ * So a link that will not parse on its own gets resolved against the site it
+ * came from. The source's `home` is the reliable origin; its feed url is the
+ * fallback for a source that only declares a feed.
+ */
+function resolveLink(raw, source) {
+  const input = String(raw ?? "").trim();
+  if (!input) return "";
+
+  // Already absolute (or a protocol-relative URL, which the caller can fix).
+  if (/^https?:\/\//i.test(input)) return input;
+  if (input.startsWith("//")) return `https:${input}`;
+
+  for (const base of [source?.home, source?.url]) {
+    if (!base) continue;
+    try {
+      return new URL(input, base).href;
+    } catch {
+      /* try the next base */
+    }
+  }
+  return input;
+}
+
 /** YouTube ids appear in `<yt:videoId>` and in the `watch?v=` link. */
 function youtubeId(block, link) {
   const direct = block.match(/<yt:videoId>([\w-]{6,})<\/yt:videoId>/i);
@@ -126,7 +158,7 @@ export function parseFeed(xml, { source } = {}) {
       attrField(block, ["link"], ["href"]) ||
       field(block, ["guid", "id"])?.value ||
       "";
-    const url = normaliseUrl(rawUrl);
+    const url = normaliseUrl(resolveLink(rawUrl, source));
     if (!url) continue;
 
     const summaryField = field(block, SUMMARY_NAMES);
