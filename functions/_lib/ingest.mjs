@@ -57,6 +57,16 @@ async function fetchSource(source, attempt = 0) {
     return fetchSource(source, 1);
   }
 
+  // YouTube answers 404 or 500 to a videos.xml request that arrives in a burst,
+  // then the exact same URL returns 200 when asked again a few seconds later.
+  // Verified: channels not even in this config (PewDiePie, MKBHD) 404 in a burst
+  // and succeed alone, so a 404 here is NOT "the channel is gone". Without this
+  // pause the board lost every video source on every run and shrank each week.
+  if ((response.status === 404 || response.status === 500) && source.kind === "video" && attempt < 2) {
+    await new Promise((resolve) => setTimeout(resolve, 2500 * (attempt + 1)));
+    return fetchSource(source, attempt + 1);
+  }
+
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const text = await response.text();
   if (!text || text.length < 200) throw new Error("empty body");
