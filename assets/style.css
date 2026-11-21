@@ -1,0 +1,739 @@
+/* ============================================================================
+   SIFT — style.css
+
+   No borders. Not one, anywhere in the layout: division is made with solid
+   colour steps instead, so the page reads as stacked blocks of paper rather
+   than a grid of outlined boxes. A hairline exists only for the focus ring,
+   which is an accessibility affordance and not decoration.
+
+   The blocks, from darkest to lightest:
+     board  (sunken)  →  rail      (a step up, sticky)
+     card   (raised)  →  foot      (a step up again, the dateline strip)
+     chip   (lane-tinted, no outline)
+
+   1 tokens      2 reset       3 type      4 masthead    5 rail
+   6 board       7 card        8 states    9 colophon   10 motion
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 1. TOKENS */
+
+:root {
+  /* Depth is colour, not strokes. Four steps, each barely apart. */
+  --board: #12100e;
+  --board-2: #171512;
+  --card: #1d1a17;
+  --card-2: #26221e;
+  --card-3: #2f2a25;
+
+  --ink: #f4efe6;
+  --ink-2: #b3aba1;
+  --ink-3: #837c73;
+
+  --lane-games: #f2613f;
+  --lane-gaming: #e8a33d;
+  --lane-indie: #c3e88d;
+  --lane-anime: #e879b9;
+  --lane-gamedev: #6fc3ba;
+  --lane-ai: #82b6e8;
+  --lane-tech: #b39ddb;
+  --lane-business: #dcc36e;
+  --lane-creator: #de9670;
+
+  --t-masthead: clamp(1.9rem, 1.3rem + 2.6vw, 3.6rem);
+  --t-card-title: clamp(1.06rem, 1rem + 0.3vw, 1.28rem);
+  --t-body: 0.95rem;
+  --t-meta: 0.71rem;
+
+  --gutter: clamp(14px, 2.4vw, 40px);
+  --shell: 1600px;
+  --col-gap: clamp(10px, 1.2vw, 18px);
+  --col-w: 330px;
+  --pad: 15px 17px;
+
+  --r-chip: 3px;
+  --r-card: 8px;
+  --r-well: 5px;
+
+  --serif: "Fraunces", Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+
+  --masthead-h: 74px;
+  --rail-h: 54px;
+}
+
+html[data-theme="light"] {
+  --board: #f3efe8;
+  --board-2: #ece6dc;
+  --card: #fbf8f3;
+  --card-2: #f0eae1;
+  --card-3: #e4ddd2;
+
+  --ink: #14120f;
+  --ink-2: #56504a;
+  --ink-3: #857e75;
+}
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("fraunces-latin.woff2") format("woff2");
+  font-weight: 600 900;
+  font-style: normal;
+  font-display: swap;
+  font-optical-sizing: auto;
+}
+
+/* ----------------------------------------------------------------- 2. RESET */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--board);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { display: block; max-width: 100%; }
+button, input { font: inherit; color: inherit; }
+
+::selection { background: var(--ink); color: var(--board); }
+
+.sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: var(--r-chip);
+  background: var(--ink);
+  color: var(--board);
+}
+.skip:focus { left: 8px; top: 8px; }
+
+/* The only hairline on the page, and only when a keyboard is in use. */
+:focus-visible {
+  outline: 2px solid var(--lane-ai);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ 3. TYPE */
+
+h1, h2, h3 { margin: 0; font-weight: 700; }
+
+/* -------------------------------------------------------------- 4. MASTHEAD */
+
+.masthead {
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  background: var(--board);
+}
+
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: var(--masthead-h);
+}
+
+.mark {
+  display: flex;
+  align-items: baseline;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.mark__word {
+  font-family: var(--serif);
+  font-size: var(--t-masthead);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 0, "WONK" 1;
+}
+
+.masthead__side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live {
+  margin: 0 6px 0 0;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.live.is-stale { color: var(--lane-gaming); }
+
+/* Refresh is a control, so it is a solid block — not an outlined box. */
+.refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px 7px 11px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: var(--card-3);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 130ms ease, color 130ms ease;
+}
+.refresh:hover { background: var(--ink); color: var(--board); }
+.refresh:disabled { cursor: progress; }
+
+.refresh__icon { flex: 0 0 auto; }
+.refresh.is-busy .refresh__icon { animation: spin 900ms linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.iconbtn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: var(--card-2);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background-color 130ms ease, color 130ms ease;
+}
+.iconbtn:hover { background: var(--card-3); color: var(--ink); }
+
+.tagline {
+  margin: 0;
+  padding: 0 0 12px;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------------------ 5. RAIL */
+
+.rail {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--board-2);
+}
+
+.rail__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  min-height: var(--rail-h);
+}
+
+.pills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 9px 0;
+}
+.pills::-webkit-scrollbar { display: none; }
+
+/* Tabs as an island: one solid trough, the live tab a step lighter than it. */
+.pill {
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 130ms ease, color 130ms ease;
+}
+.pill:hover { background: var(--card-2); color: var(--ink); }
+
+.pill.is-on { background: var(--card-3); color: var(--ink); }
+
+/* A lit tab takes its lane's colour, dimmed to a block you can still read on. */
+.pill.is-on[data-lane="games"]    { background: var(--lane-games);    color: #1a0f0b; }
+.pill.is-on[data-lane="gaming"]   { background: var(--lane-gaming);   color: #1d1508; }
+.pill.is-on[data-lane="indie"]    { background: var(--lane-indie);    color: #141d0a; }
+.pill.is-on[data-lane="anime"]    { background: var(--lane-anime);    color: #210d19; }
+.pill.is-on[data-lane="gamedev"]  { background: var(--lane-gamedev);  color: #08201e; }
+.pill.is-on[data-lane="ai"]       { background: var(--lane-ai);       color: #0a1520; }
+.pill.is-on[data-lane="tech"]     { background: var(--lane-tech);     color: #150f20; }
+.pill.is-on[data-lane="business"] { background: var(--lane-business);  color: #1d1808; }
+.pill.is-on[data-lane="creator"]  { background: var(--lane-creator);  color: #21100a; }
+
+.search {
+  position: relative;
+  flex: 0 1 200px;
+  display: flex;
+  align-items: center;
+}
+
+.search input {
+  width: 100%;
+  padding: 7px 27px 7px 11px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: var(--card);
+  font-family: var(--mono);
+  font-size: 0.77rem;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  transition: background-color 130ms ease;
+}
+.search input::placeholder { color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.09em; }
+.search input:focus { outline: none; background: var(--card-3); }
+.search input::-webkit-search-cancel-button { filter: invert(0.6); }
+
+.search__hint {
+  position: absolute;
+  right: 8px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------- 6. BOARD */
+
+main {
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 20px var(--gutter) 0;
+}
+
+/* Explicit columns instead of CSS `columns:`.
+
+   `columns: 330px` looks like masonry and behaves like a newspaper: every time a
+   card is appended the browser re-flows the whole block, so cards already on
+   screen get pulled into different columns and the reader watches the page
+   reshuffle under their thumb. On a board that grows forever, that is constant
+   motion and it re-shows stories that had scrolled away.
+
+   Three real columns never re-flow. A card is appended to whichever column is
+   currently shortest, so the layout stays balanced without anything above it
+   ever moving. The column count is set in JS, because it depends on width. */
+.board {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--col-gap);
+}
+.board__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--col-gap);
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ 7. CARD */
+
+.card {
+  position: relative;
+  page-break-inside: avoid;
+  border: 0;
+  border-radius: var(--r-card);
+  background: var(--card);
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
+  /* No content-visibility here on purpose. In a multi-column layout the browser
+     re-flows every column when a card's estimated height is corrected to its
+     real height, and that happens while the reader is looking at it — the cards
+     visibly jump. Real rendering is cheap enough for a few hundred cards. */
+  transition: background-color 140ms ease;
+}
+.card:hover { background: var(--card-2); }
+
+/* Taller than a video thumbnail on purpose: the picture is a way in, not the
+   thing itself, and 4:3 leaves the block feeling like a card rather than a
+   banner. */
+.card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--card-3);
+  overflow: hidden;
+}
+
+.card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 240ms ease-out, transform 400ms ease-out;
+}
+.card__img.is-loaded { opacity: 1; }
+.card:hover .card__img { transform: scale(1.015); }
+
+/* --pad is two values ("15px 17px"), so writing `padding: var(--pad) 17px 0`
+   silently expands to top/right/bottom/left = 15/17/17/0 — no left padding at
+   all. Text cards hid it because .card--type below restores 18px on every side;
+   image cards took it straight in the face and the words ran into the rounded
+   edge. Spell all four values out and never let a shorthand eat the left side. */
+.card__body { padding: 15px 17px 0; }
+
+/* A card with no image is a type card: no empty frame, room for the words
+   instead. These are the text-only outlets and they should look deliberate. */
+.card--type .card__body { padding: 18px 18px 0; }
+.card--type .card__title {
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  font-size: calc(var(--t-card-title) * 1.05);
+}
+.card--type .card__sum {
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+}
+
+.card__kind {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-chip);
+  background: color-mix(in srgb, var(--board) 76%, transparent);
+  color: var(--ink);
+}
+
+.card__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The lane, as a tinted block: the same trick as a lit tab, one step softer. */
+.card__lane {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: var(--r-chip);
+  background: var(--card-3);
+  color: var(--ink-2);
+  font-size: 0.66rem;
+  letter-spacing: 0.07em;
+}
+.card[data-lane="games"]    .card__lane { background: color-mix(in srgb, var(--lane-games) 20%, var(--card));    color: var(--lane-games); }
+.card[data-lane="gaming"]   .card__lane { background: color-mix(in srgb, var(--lane-gaming) 20%, var(--card));   color: var(--lane-gaming); }
+.card[data-lane="indie"]    .card__lane { background: color-mix(in srgb, var(--lane-indie) 20%, var(--card));    color: var(--lane-indie); }
+.card[data-lane="anime"]    .card__lane { background: color-mix(in srgb, var(--lane-anime) 20%, var(--card));    color: var(--lane-anime); }
+.card[data-lane="gamedev"]  .card__lane { background: color-mix(in srgb, var(--lane-gamedev) 20%, var(--card));  color: var(--lane-gamedev); }
+.card[data-lane="ai"]       .card__lane { background: color-mix(in srgb, var(--lane-ai) 20%, var(--card));       color: var(--lane-ai); }
+.card[data-lane="tech"]     .card__lane { background: color-mix(in srgb, var(--lane-tech) 20%, var(--card));     color: var(--lane-tech); }
+.card[data-lane="business"] .card__lane { background: color-mix(in srgb, var(--lane-business) 20%, var(--card)); color: var(--lane-business); }
+.card[data-lane="creator"]  .card__lane { background: color-mix(in srgb, var(--lane-creator) 20%, var(--card));  color: var(--lane-creator); }
+
+.card__source {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.card__title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: var(--t-card-title);
+  font-weight: 700;
+  line-height: 1.24;
+  letter-spacing: -0.008em;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-wrap: balance;
+}
+
+/* More of the story than two lines. A single line of copy told the reader
+   nothing, which is exactly the complaint this answers. */
+.card__sum {
+  margin: 9px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* The dateline, as a foot strip a shade lighter than the card — division by
+   colour, and the one place a full-width edge is drawn. */
+.card__when {
+  margin: 14px -17px 0;
+  padding: 9px 17px 10px;
+  background: var(--card-2);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.card--type .card__when { margin-left: -18px; margin-right: -18px; padding-left: 18px; padding-right: 18px; }
+.card:hover .card__when { background: var(--card-3); }
+
+.card__hide {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: color-mix(in srgb, var(--board) 74%, transparent);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 130ms ease;
+}
+.card:hover .card__hide,
+.card__hide:focus-visible { opacity: 1; }
+@media (hover: none) { .card__hide { opacity: 0.9; } }
+
+/* ---------------------------------------------------------------- 8. STATES */
+
+.skeleton {
+  border-radius: var(--r-card);
+  background: var(--card);
+  overflow: hidden;
+}
+.skeleton__media {
+  aspect-ratio: 4 / 3;
+  background: var(--card-2);
+}
+.skeleton__body { padding: 15px 17px 18px; }
+.skeleton__line {
+  height: 9px;
+  margin-bottom: 7px;
+  border-radius: 2px;
+  background: var(--card-2);
+}
+.skeleton__line--meta { width: 44%; height: 7px; }
+.skeleton__line--title { width: 92%; height: 13px; }
+.skeleton__line--title2 { width: 70%; height: 13px; }
+.skeleton__line--sum { width: 96%; }
+.skeleton__line--sum2 { width: 88%; }
+
+.is-loading .skeleton { animation: pulse 1.6s ease-in-out infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.board__status {
+  padding: 26px 0 40px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  min-height: 24px;
+}
+.board__status:empty { padding: 0; min-height: 0; }
+
+.sentinel { height: 1px; }
+
+.empty {
+  max-width: 460px;
+  margin: 44px auto 0;
+  padding: 26px 24px;
+  border-radius: var(--r-card);
+  background: var(--card);
+  text-align: center;
+}
+.empty__title {
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.empty__body {
+  margin: 8px 0 18px;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+.btn {
+  padding: 9px 17px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: var(--card-3);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 130ms ease, color 130ms ease;
+}
+.btn:hover { background: var(--ink); color: var(--board); }
+
+.newbar {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+.newbar__btn {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: var(--ink);
+  color: var(--board);
+  font-family: var(--mono);
+  font-size: var(--t-meta);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.noscript {
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 20px 22px;
+  border-radius: var(--r-card);
+  background: var(--card);
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+/* -------------------------------------------------------------- 9. COLOPHON */
+
+.colophon {
+  margin: 0 0 60px;
+  padding: 22px 24px;
+  border-radius: var(--r-card);
+  background: var(--board-2);
+  font-size: 0.82rem;
+  color: var(--ink-2);
+}
+.colophon__line { margin: 0 0 6px; }
+.colophon__line:last-child { margin-bottom: 0; }
+.colophon__muted { color: var(--ink-3); }
+
+/* ---------------------------------------------------------------- 10. MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .card:hover .card__img { transform: none; }
+}
+
+/* ------------------------------------------------------------ 11. BREAKPOINTS */
+
+@media (max-width: 1180px) {
+  :root { --col-w: 300px; }
+}
+
+@media (max-width: 900px) {
+  :root { --col-w: 260px; --masthead-h: 62px; --rail-h: 48px; }
+  .tagline { display: none; }
+}
+
+@media (max-width: 780px) {
+  :root { --col-w: 230px; --col-gap: 10px; }
+  .card { border-radius: 6px; }
+  .card__body { padding: 12px 13px 0; }
+  .card__when { margin-left: -13px; margin-right: -13px; padding-left: 13px; padding-right: 13px; }
+  .card--type .card__body { padding: 14px 14px 0; }
+  .card--type .card__when { margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; }
+  .card__title { -webkit-line-clamp: 5; line-clamp: 5; }
+  .card__sum { -webkit-line-clamp: 3; line-clamp: 3; }
+  .rail__inner { gap: 10px; }
+  .search { flex-basis: 130px; }
+  .search__hint { display: none; }
+  .refresh__label { display: none; }
+  .refresh { padding: 8px 9px; }
+}
+
+@media (max-width: 560px) {
+  /* Two rows: the lanes get the full width and scroll cleanly, the search field
+     sits under them. Sharing one row cut a lane label in half ("AN SE"), which
+     reads as a broken page rather than a scrollable rail. */
+  .rail__inner {
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0;
+    padding-bottom: 8px;
+  }
+  .pills { flex: 1 0 100%; order: 1; }
+  .search { flex: 1 0 100%; order: 2; }
+  .search input { height: 34px; }
+  .live { display: none; }
+}
+
+@media (max-width: 460px) {
+  :root { --col-w: 100%; }
+  .card__title { -webkit-line-clamp: 4; line-clamp: 4; }
+  .card__sum { -webkit-line-clamp: 4; line-clamp: 4; }
+}
+
+@media print {
+  .rail, .newbar, .iconbtn, .refresh, .card__hide, .sentinel { display: none; }
+  body { background: #fff; color: #000; }
+  .board { display: block; }
+  .card { break-inside: avoid; background: #fff; }
+  .card__when { background: #eee; }
+}
